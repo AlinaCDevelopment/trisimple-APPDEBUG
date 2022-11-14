@@ -1,0 +1,38 @@
+{
+    "search": "Search",
+    "version": "version",
+
+    "exit": "Exit",
+    "scan": "Scan",
+    "pendingRecords": "Pending Records",
+    "badConnection": "Connection failed",
+    "rightConnection": "Connected",
+
+    "platform": "Plataform",
+    "contactsLabel": "Contact of the technician\nin charge of the event for support:",
+
+    "eventSelectHint": "Select the event",
+    "equipSelectHint": "Select the equipment",
+    "passwordHint": "Insert the password",
+    "signIn": "Sign In",
+    "controlAccess": "ACCESSES\nCONTROL",
+    "reservedArea": "Reserved Area",
+    "authorizedPeople": "Solely people authorized by Trisimple are allowed in",
+    "emailLabel": "For more information, email:",
+    
+    "codeInsertLabel": "Insert the CODE printed on the bracelet's Chip",
+    "condeInsertHint": "Insert the code",
+
+
+    "approachNfc": "May approach.",
+    "unavailableNfc": "NFC UNAVAILABLE",
+
+    "valid": "VALID",
+    "invalid": "INVALID",
+    "ticket": "Ticket",
+    "bracelet": "Bracelet",
+
+    "error": "Error"
+
+}
+
