@@ -44,11 +44,11 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-               Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: const[
-                   Text(
+                children: const [
+                  Text(
                     'APP DEV',
                     style: TextStyle(
                         fontSize: 15,
@@ -145,16 +145,18 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                         onTap: () async {
                           print("pop");
                           ref.read(authProvider.notifier).resetAuth();
-                          //TODO Implement this in APP 4
+                          //TODO Implement this in App Debug
                           //In Android¡'s case we exit the app
-                          if (Platform.isAndroid) {SystemChannels.platform
-                              .invokeMethod('SystemNavigator.pop');
-                          //iOS doesn't allow apps to exit themselves so we go to AuthScreen
-                          } else {Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>  AuthScreen()),
-                                            );
+                          if (Platform.isAndroid) {
+                            SystemChannels.platform
+                                .invokeMethod('SystemNavigator.pop');
+                            //iOS doesn't allow apps to exit themselves so we go to AuthScreen
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AuthScreen()),
+                            );
                           }
                           SystemChannels.platform
                               .invokeMethod('SystemNavigator.pop');

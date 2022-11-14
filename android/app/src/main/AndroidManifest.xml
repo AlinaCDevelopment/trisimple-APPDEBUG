@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.albinet.trisimple.app4">
+    package="com.albinet.trisimple.appdebug">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false"/> 
     <uses-permission android:name="android.per  +mission.RECORD_AUDIO" />
    <application
-        android:label="App 4 - Trisimple"
+        android:label="App Debug - Trisimple"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

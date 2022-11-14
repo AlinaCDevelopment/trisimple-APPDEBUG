@@ -15,7 +15,7 @@ class NfcState {
   Map<String, dynamic>? specs;
 
   NfcState({this.tag, this.error, this.bitesRead, this.specs});
-  //TODO Add this constructor to APP4
+  //TODO Add this constructor to appdebug
   NfcState.error(this.error);
 }
 

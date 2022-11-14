@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.albinet.trisimple.app4"
+        applicationId "com.albinet.trisimple.appdebug"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()

@@ -1,4 +1,4 @@
-package com.albinet.trisimple.app4
+package com.albinet.trisimple.appdebug
 
 import io.flutter.embedding.android.FlutterActivity
 
