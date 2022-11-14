@@ -5,10 +5,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import '../constants/colors.dart';
 
 class ThemedButton extends StatelessWidget {
-  const ThemedButton({super.key, required this.onTap, required this.text});
+  const ThemedButton(
+      {super.key, required this.onTap, required this.text, this.color});
 
   final VoidCallback onTap;
   final String text;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class ThemedButton extends StatelessWidget {
           height: 48,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: secondColor),
+              color: color ?? secondColor),
           child: Center(
             child: Text(
               text,

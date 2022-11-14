@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:app_4/views/search_view.dart';
 import 'package:app_4/widgets/themed_button.dart';
 import 'package:app_4/widgets/ui/views_container.dart';
 
@@ -12,27 +13,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/assets_routes.dart';
 import '../constants/colors.dart';
+import '../screens/container_screen.dart';
 import '../widgets/ui/dialog_messages.dart';
 
 //TODO Fix authentication preferences save
 
 class ScanView extends ConsumerWidget {
-  const ScanView(this.parentContext, {super.key});
-  final BuildContext parentContext;
+  const ScanView();
+  //const ScanView(this.context);
+  //TODO Try using its own context instead of the parent's
+  //TODO Remove toSearch
 
   static const name = 'scan';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     ref.listen(nfcProvider, (previous, next) {
       if (next != null && next.error != null ||
           next != null && next.tag != null) {
         Widget dialog;
         if (next.error != null && next.error!.isNotEmpty) {
-          dialog = ErrorMessage(parentContext);
+          dialog = ErrorMessage(context);
         } else {
-          dialog = ValidationMessage(parentContext, eventTag: next.tag!);
+          dialog = ValidationMessage(context, eventTag: next.tag!);
         }
         showDialog(
           context: context,
@@ -51,25 +54,43 @@ class ScanView extends ConsumerWidget {
         Widget? bodyPresented;
         if (snapshot.hasData && snapshot.data != null) {
           //REAL VERSION
-            if ((snapshot.data!)) {
-              bodyPresented = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        const ScranImage(),
-         Padding(
-          padding: const EdgeInsets.only(right: 60.0, left: 60.0, bottom: 10),
-          child: ThemedButton(
-        onTap: () {}, text: AppLocalizations.of(context).search),
-        ),
-      ],
-      );
+          /* if ((snapshot.data!)) {
+            bodyPresented = Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const ScranImage(),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      right: 60.0, left: 60.0, bottom: 10),
+                  child: ThemedButton(
+                      onTap: () => ref
+                          .read(viewProvider.notifier)
+                          .setView(SearchView.name),
+                      text: AppLocalizations.of(context).search),
+                ),
+              ],
+            ); */
           //TEST VERSION
-          //if ((true)) {
-          //  bodyPresented = GestureDetector(
-          //      onTap: () {
-          //        ref.read(nfcProvider.notifier).setDumbPositive();
-          //      },
-          //      child: nfcUserChild);
+          if ((true)) {
+            bodyPresented = GestureDetector(
+                onTap: () {
+                  ref.read(nfcProvider.notifier).setDumbError();
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const ScranImage(),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          right: 60.0, left: 60.0, bottom: 10),
+                      child: ThemedButton(
+                          onTap: () => ref
+                              .read(viewProvider.notifier)
+                              .setView(SearchView.name),
+                          text: AppLocalizations.of(context).search),
+                    ),
+                  ],
+                ));
           } else {
             bodyPresented = Center(
                 child: Padding(
@@ -92,8 +113,6 @@ class ScanView extends ConsumerWidget {
     );
   }
 }
-
-
 
 class ScranImage extends StatelessWidget {
   const ScranImage({

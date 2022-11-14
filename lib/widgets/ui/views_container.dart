@@ -26,7 +26,7 @@ class ViewContainer extends ConsumerWidget {
               children: [
                 Text(
                   AppLocalizations.of(context).platform,
-                  style:  const TextStyle(
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 25,
                       fontWeight: FontWeight.normal),
@@ -34,7 +34,7 @@ class ViewContainer extends ConsumerWidget {
                 ),
                 const Text(
                   'DEVELOPMENT',
-                  style:  TextStyle(
+                  style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 25),
@@ -54,43 +54,77 @@ class ViewContainer extends ConsumerWidget {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding:
-                    EdgeInsets.only(bottom: SizeConfig.screenHeight * 0.09),
-                child: Column(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 70.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.contactsLabel,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 13),
-                            ),
-                            const Text(
-                              '+351 962 260 499',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        )),
-                    SizedBox(
-                      height: SizeConfig.screenHeight * 0.05,
+                  padding:
+                      EdgeInsets.only(bottom: SizeConfig.screenHeight * 0.09),
+                  child: Center(
+                    child: Text(
+                      '${AppLocalizations.of(context).version}: 1.0.0',
+                      style: TextStyle(fontSize: 11, color: thirdColor),
+                      textAlign: TextAlign.center,
                     ),
-                    Center(
-                      child: Text(
-                        '${AppLocalizations.of(context).version}: 1.0.0',
-                        style: TextStyle(fontSize: 11, color: thirdColor),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  ],
+                  )),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class SimpleViewContainer extends ConsumerWidget {
+  const SimpleViewContainer({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      color: primaryColor,
+      constraints: const BoxConstraints.expand(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 30.0),
+            child: Column(
+              children: [
+                Text(
+                  AppLocalizations.of(context).platform,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.normal),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const Text(
+                  'DEVELOPMENT',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30.0),
+              child: child,
+            ),
+          ),
+          FittedBox(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                  padding:
+                      EdgeInsets.only(bottom: SizeConfig.screenHeight * 0.09),
+                  child: Center(
+                    child: Text(
+                      '${AppLocalizations.of(context).version}: 1.0.0',
+                      style: TextStyle(fontSize: 11, color: thirdColor),
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
             ),
           )
         ],

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_4/views/search_view.dart';
 
-import '../models/innerView.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../views/scan_view.dart';
@@ -18,6 +17,19 @@ import '../constants/colors.dart';
 import '../widgets/ui/views_container.dart';
 import 'auth_screen.dart';
 
+@immutable
+class ViewNotifier extends StateNotifier<String> {
+  ViewNotifier() : super(ScanView.name);
+
+  void setView(String routeName) async {
+    state = routeName;
+  }
+}
+
+final viewProvider = StateNotifierProvider<ViewNotifier, String>((ref) {
+  return ViewNotifier();
+});
+
 class ContainerScreen extends ConsumerStatefulWidget {
   const ContainerScreen({super.key});
 
@@ -26,15 +38,14 @@ class ContainerScreen extends ConsumerStatefulWidget {
 }
 
 class _ContainerScreenState extends ConsumerState<ContainerScreen> {
-  var _selectedRouteName = ScanView.name;
   bool isFail = true;
-
+  final screens = {
+    ScanView.name: ViewContainer(child: ScanView()),
+    SearchView.name: const SimpleViewContainer(child: SearchView()),
+  };
   @override
   Widget build(BuildContext context) {
-    final screens = {
-      ScanView.name: ScanView(context),
-      SearchView.name: const SearchView(),
-    };
+    final _selectedRouteName = ref.watch(viewProvider);
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -143,9 +154,8 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                     builder: (context, ref, child) {
                       return DrawerTile(
                         onTap: () async {
-                          print("pop");
                           ref.read(authProvider.notifier).resetAuth();
-                          //TODO Implement this in App Debug
+
                           //In Android¡'s case we exit the app
                           if (Platform.isAndroid) {
                             SystemChannels.platform
@@ -158,8 +168,6 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                                   builder: (context) => AuthScreen()),
                             );
                           }
-                          SystemChannels.platform
-                              .invokeMethod('SystemNavigator.pop');
                         },
                         isSelected: false,
                         title: AppLocalizations.of(context).exit.toUpperCase(),
@@ -201,18 +209,14 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
             ],
           ),
         ),
-        body: ViewContainer(
-          child: screens[_selectedRouteName]!,
-        ),
+        body: screens[_selectedRouteName]!,
       ),
     );
   }
 
   void _routeTileTapped(String name) {
     Navigator.pop(context);
-    setState(() {
-      _selectedRouteName = name;
-    });
+    ref.read(viewProvider.notifier).setView(name);
   }
 }
 

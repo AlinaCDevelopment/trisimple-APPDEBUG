@@ -15,7 +15,7 @@ class ErrorMessage extends StatelessWidget {
     return DialogMessage(
         context: parentContext,
         title: AppLocalizations.of(context).error,
-        assetPngImgName: 'error');
+        assetPngImgName: errorImgRoute);
   }
 }
 

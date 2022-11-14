@@ -126,7 +126,7 @@ class AuthScreen extends StatelessWidget {
                                       fit: BoxFit.scaleDown,
                                       child: Text('DEVOPS',
                                         style:  TextStyle(
-                                            color: secondColor,
+                                            color: primaryColor,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 50),
                                         textAlign: TextAlign.center,

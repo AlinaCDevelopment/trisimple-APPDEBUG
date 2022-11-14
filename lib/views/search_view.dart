@@ -1,3 +1,4 @@
+import 'package:app_4/constants/colors.dart';
 import 'package:app_4/helpers/size_helper.dart';
 import 'package:app_4/widgets/themed_button.dart';
 import 'package:app_4/widgets/themed_input.dart';
@@ -23,7 +24,10 @@ class SearchView extends ConsumerWidget {
                 onChanged: (value) {},
                 hintText: AppLocalizations.of(context).codeInsertLabel),
           ),
-          ThemedButton(onTap: () {}, text: AppLocalizations.of(context).search)
+          ThemedButton(
+              onTap: () {},
+              color: secondColor,
+              text: AppLocalizations.of(context).search)
         ],
       ),
     );

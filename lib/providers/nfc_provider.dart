@@ -108,6 +108,10 @@ class NfcNotifier extends StateNotifier<NfcState> {
     }
     return bites;
   }
+
+  void setDumbError() {
+    state = NfcState(error: "Ocorreu um erro de plataforma.");
+  }
 }
 
 final nfcProvider = StateNotifierProvider<NfcNotifier, NfcState?>((ref) {

@@ -14,7 +14,6 @@ const _backColorMap = {
 };
 const backMaterialColor = MaterialColor(0xFF04040A, _backColorMap);
 
-
 const primaryColor = Colors.black;
 
 const _brightColorMap = {
@@ -32,10 +31,7 @@ const _brightColorMap = {
 
 const primaryMaterialColor = MaterialColor(0x00000000, _brightColorMap);
 
-
-
-
-const secondColor = Color.fromRGBO(107,107,107, 1);
+const secondColor = Color.fromRGBO(107, 107, 107, 1);
 const thirdColor = Colors.white;
 
 const hintColor = Color.fromARGB(255, 80, 80, 80);
@@ -43,4 +39,3 @@ const canvasColor = Colors.white;
 
 const appBarTextColor = Colors.black;
 const appBarColor = Colors.white;
-
