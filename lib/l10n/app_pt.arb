@@ -14,6 +14,9 @@
 
     "passwordHint": "Insere a palavra-passe",
     "signIn": "Registar",
+    "wrongPassword": "A password inserida não está correta,\ntenta novamente.",
+    "fillAllFields": "Todos os campos são obrigatórios,\ntenta novamente.",
+
     "controlAccess": "CONTROLO\nDE ACESSOS",
     "reservedArea": "Área Reservada",
     "authorizedPeople": "Só é permitida a entrada a pessoas autorizadas pela Trisimple",

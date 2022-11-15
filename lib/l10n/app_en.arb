@@ -15,6 +15,9 @@
     "equipSelectHint": "Select the equipment",
     "passwordHint": "Insert the password",
     "signIn": "Sign In",
+    "wrongPassword": "The inserted password is not correct,\ntry again.",
+    "fillAllFields": "All fields are mandatory,\ntry again.",
+
     "controlAccess": "ACCESSES\nCONTROL",
     "reservedArea": "Reserved Area",
     "authorizedPeople": "Solely people authorized by Trisimple are allowed in",

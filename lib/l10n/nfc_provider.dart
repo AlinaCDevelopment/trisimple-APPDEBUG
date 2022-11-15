@@ -32,7 +32,7 @@ class NfcState {
     this.atqa,
     this.session,
   });
-  
+
   NfcState.error(this.error);
 }
 
@@ -123,7 +123,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
   Future<List<String>> _readBites(MifareUltralight tag) async {
     List<String> bites = List.empty(growable: true);
-    //TODO Find max
+    //App Debu Find max
     for (int i = 0; i < 32; i++) {
       final page = await tag.readPages(pageOffset: i);
       final pageText = String.fromCharCodes(page);

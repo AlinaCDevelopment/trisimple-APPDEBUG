@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_4/views/search_view.dart';
+import 'package:app_4/views/tagdata_view.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
@@ -40,6 +41,7 @@ class ContainerScreen extends ConsumerStatefulWidget {
 class _ContainerScreenState extends ConsumerState<ContainerScreen> {
   bool isFail = true;
   final screens = {
+   // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
     ScanView.name: ViewContainer(child: ScanView()),
     SearchView.name: const SimpleViewContainer(child: SearchView()),
   };

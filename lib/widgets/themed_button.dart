@@ -20,7 +20,7 @@ class ThemedButton extends StatelessWidget {
           height: 48,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: color ?? secondColor),
+              color: color ?? primaryColor),
           child: Center(
             child: Text(
               text,

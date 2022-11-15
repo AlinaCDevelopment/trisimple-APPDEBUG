@@ -15,68 +15,46 @@ import '../constants/assets_routes.dart';
 import '../constants/colors.dart';
 import '../screens/container_screen.dart';
 import '../widgets/ui/dialog_messages.dart';
-
-//TODO Fix authentication preferences save
+import 'tagdata_view.dart';
 
 class ScanView extends ConsumerWidget {
   const ScanView();
-  //const ScanView(this.context);
-  //TODO Try using its own context instead of the parent's
-  //TODO Remove toSearch
 
   static const name = 'scan';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool tagFound = false;
     ref.listen(nfcProvider, (previous, next) {
       if (next != null && next.error != null ||
           next != null && next.tag != null) {
-        Widget dialog;
         if (next.error != null && next.error!.isNotEmpty) {
-          dialog = ErrorMessage(context);
+          showMessageDialog(context, ScanErrorMessage(context));
         } else {
-          dialog = ValidationMessage(context, eventTag: next.tag!);
+          tagFound = true;
         }
-        showDialog(
-          context: context,
-          barrierColor: Colors.transparent,
-          builder: (BuildContext context) {
-            return BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: dialog);
-          },
-        );
       }
     });
-    return FutureBuilder(
-      future: ref.read(nfcProvider.notifier).isNfcAvailable(),
-      builder: (context, snapshot) {
-        Widget? bodyPresented;
-        if (snapshot.hasData && snapshot.data != null) {
-          //REAL VERSION
-          /* if ((snapshot.data!)) {
-            bodyPresented = Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const ScranImage(),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      right: 60.0, left: 60.0, bottom: 10),
-                  child: ThemedButton(
-                      onTap: () => ref
-                          .read(viewProvider.notifier)
-                          .setView(SearchView.name),
-                      text: AppLocalizations.of(context).search),
-                ),
-              ],
-            ); */
-          //TEST VERSION
-          if ((true)) {
-            bodyPresented = GestureDetector(
-                onTap: () {
-                  ref.read(nfcProvider.notifier).setDumbError();
-                },
-                child: Column(
+    if (tagFound) {
+      ref.read(nfcProvider.notifier).readTag();
+      return TagDataView();
+    }
+    return Builder(
+      builder: (context) {
+        if (ref.read(nfcProvider)?.tag != null) {
+          ref.read(nfcProvider.notifier).readTag();
+          return TagDataView();
+        }
+        return FutureBuilder(
+          future: ref.read(nfcProvider.notifier).isNfcAvailable(),
+          builder: (context, snapshot) {
+            Widget? bodyPresented;
+            if (snapshot.hasData && snapshot.data != null) {
+              //REAL VERSION
+              if ((snapshot.data!)) {
+                ref.read(nfcProvider.notifier).readTag();
+
+                bodyPresented = Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     const ScranImage(),
@@ -90,25 +68,49 @@ class ScanView extends ConsumerWidget {
                           text: AppLocalizations.of(context).search),
                     ),
                   ],
+                );
+                //TEST VERSION
+                /*
+            if ((true)) {
+              bodyPresented = GestureDetector(
+                  onTap: () {
+                    ref.read(nfcProvider.notifier).setDumbError();
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      const ScranImage(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            right: 60.0, left: 60.0, bottom: 10),
+                        child: ThemedButton(
+                            onTap: () => ref
+                                .read(viewProvider.notifier)
+                                .setView(SearchView.name),
+                            text: AppLocalizations.of(context).search),
+                      ),
+                    ],
+                  ));*/
+              } else {
+                bodyPresented = Center(
+                    child: Padding(
+                  padding: const EdgeInsets.only(bottom: 100.0),
+                  child: Text(
+                    AppLocalizations.of(context).unavailableNfc,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                        shadows: [
+                          Shadow(offset: Offset(1, 1)),
+                          Shadow(offset: Offset(1, -1))
+                        ]),
+                  ),
                 ));
-          } else {
-            bodyPresented = Center(
-                child: Padding(
-              padding: const EdgeInsets.only(bottom: 100.0),
-              child: Text(
-                AppLocalizations.of(context).unavailableNfc,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                    shadows: [
-                      Shadow(offset: Offset(1, 1)),
-                      Shadow(offset: Offset(1, -1))
-                    ]),
-              ),
-            ));
-          }
-        }
-        return bodyPresented ?? Container();
+              }
+            }
+            return bodyPresented ?? Container();
+          },
+        );
       },
     );
   }

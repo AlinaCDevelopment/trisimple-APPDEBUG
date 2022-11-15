@@ -8,10 +8,10 @@ import '../constants/assets_routes.dart';
 import '../constants/colors.dart';
 import '../helpers/size_helper.dart';
 
-
 import '../providers/auth_provider.dart';
 import '../widgets/themed_button.dart';
 import '../widgets/themed_input.dart';
+import '../widgets/ui/dialog_messages.dart';
 import '../widgets/utility/empty_scroll_behaviour.dart';
 import 'container_screen.dart';
 
@@ -20,8 +20,8 @@ const _inputFontSize = 15.0;
 const _bottomFontSize = 13.0;
 
 final _inputRadius = BorderRadius.circular(50);
-//TODO set as empty
-String _password = '0';
+
+String _password = '';
 
 class AuthScreen extends StatelessWidget {
   AuthScreen({super.key});
@@ -30,14 +30,15 @@ class AuthScreen extends StatelessWidget {
     height: SizeConfig.screenHeight * 0.02,
   );
 
-
   _buildSubmitButton() {
     return Consumer(
       builder: (context, ref, container) {
         return ThemedButton(
             onTap: () async {
               if (_password.isNotEmpty) {
-                bool valid = await ref.read(authProvider.notifier).authenticate(_password);
+                bool valid = await ref
+                    .read(authProvider.notifier)
+                    .authenticate(_password);
                 if (valid) {
                   Navigator.pushReplacement(
                     context,
@@ -45,31 +46,18 @@ class AuthScreen extends StatelessWidget {
                         builder: (context) => const ContainerScreen()),
                   );
                 } else {
-                  AlertDialog alert = const AlertDialog(
-                    title: Text("COULD NOT AUTHENTICATE"),
-                    content: Text("Wrong Password."),
-                    actions: [],
-                  );
-
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return alert;
-                    },
-                  );
+                  await showMessageDialog(
+                      context,
+                      DialogMessage(
+                          title: 'Upsss!',
+                          content: AppLocalizations.of(context).wrongPassword));
                 }
               } else {
-                AlertDialog alert = const AlertDialog(
-                  title: Text("COULD NOT AUTHENTICATE"),
-                  content: Text("Some fields were not filled."),
-                  actions: [],
-                );
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return alert;
-                  },
-                );
+                await showMessageDialog(
+                    context,
+                    DialogMessage(
+                        title: 'Upsss!',
+                        content: AppLocalizations.of(context).fillAllFields));
               }
             },
             text: AppLocalizations.of(context).signIn);
@@ -124,8 +112,9 @@ class AuthScreen extends StatelessWidget {
                                     ),
                                     const FittedBox(
                                       fit: BoxFit.scaleDown,
-                                      child: Text('DEVOPS',
-                                        style:  TextStyle(
+                                      child: Text(
+                                        'DEVOPS',
+                                        style: TextStyle(
                                             color: primaryColor,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 50),

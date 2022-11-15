@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app_4/constants/assets_routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -6,21 +8,20 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../helpers/size_helper.dart';
 import '../../models/event_tag.dart';
 
-class ErrorMessage extends StatelessWidget {
-  ErrorMessage(this.parentContext);
+class ScanErrorMessage extends StatelessWidget {
+  ScanErrorMessage(this.parentContext);
   final BuildContext parentContext;
 
   @override
   Widget build(BuildContext context) {
-    return DialogMessage(
-        context: parentContext,
+    return ScanDialogMessage(
         title: AppLocalizations.of(context).error,
         assetPngImgName: errorImgRoute);
   }
 }
 
-class ValidationMessage extends StatelessWidget {
-  const ValidationMessage(
+class ScanValidationMessage extends StatelessWidget {
+  const ScanValidationMessage(
     this.parentContext, {
     Key? key,
     required this.eventTag,
@@ -34,7 +35,7 @@ class ValidationMessage extends StatelessWidget {
     final availability =
         _checkTagValidity(eventTag.startDate, eventTag.endDate);
     final durationDays = eventTag.endDate.day - eventTag.startDate.day + 1;
-    //TODO Localize validationText
+
     final validationText = availability
         ? AppLocalizations.of(context).valid
         : AppLocalizations.of(context).invalid;
@@ -50,9 +51,8 @@ class ValidationMessage extends StatelessWidget {
         '${eventTag.startDate.day}-${eventTag.startDate.month}-${eventTag.startDate.year}, ' +
         'até ${eventTag.startDate.hour}h do dia ' +
         '${eventTag.endDate.day}-${eventTag.endDate.month}-${eventTag.endDate.year}';
-    return DialogMessage(
+    return ScanDialogMessage(
       assetPngImgName: availability ? validImgRoute : invalidImgRoute,
-      context: parentContext,
       title: validationText,
       content: Column(children: [
         FittedBox(
@@ -158,14 +158,12 @@ String _getMonth(int month) {
   }
 }
 
-class DialogMessage extends StatelessWidget {
-  const DialogMessage(
+class ScanDialogMessage extends StatelessWidget {
+  const ScanDialogMessage(
       {super.key,
-      required this.context,
       required this.title,
       this.content,
       required this.assetPngImgName});
-  final BuildContext context;
   final String title;
   final Widget? content;
   final String assetPngImgName;
@@ -184,7 +182,6 @@ class DialogMessage extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: GestureDetector(
-                    //TODO Use Icon
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Icon(
@@ -216,4 +213,78 @@ class DialogMessage extends StatelessWidget {
               ],
             )));
   }
+}
+
+class DialogMessage extends StatelessWidget {
+  const DialogMessage({super.key, required this.title, required this.content});
+  final String title;
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Container(
+            height: SizeConfig.screenHeight * 0.25,
+            width: SizeConfig.screenWidth * 0.85,
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(8.0)),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    //TODO Use Icon
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 29, 29, 29)
+                                .withOpacity(0.7),
+                            fontSize: 30),
+                      ),
+                      SizedBox(
+                        height: SizeConfig.screenHeight * 0.02,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: FittedBox(
+                          child: Text(
+                            content,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Color.fromARGB(115, 14, 14, 14),
+                                fontSize: 20),
+                          ),
+                        ),
+                      )
+                    ]),
+              ],
+            )));
+  }
+}
+
+Future<T?> showMessageDialog<T>(BuildContext context, Widget message) async {
+  return await showDialog<T>(
+    context: context,
+    barrierColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), child: message);
+    },
+  );
 }
