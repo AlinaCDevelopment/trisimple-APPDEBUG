@@ -21,14 +21,23 @@ class ThemedInput extends StatelessWidget {
     return TextFormField(
       onChanged: onChanged,
       obscureText: obscureText,
-      style: const TextStyle(color: hintColor),
+      style: const TextStyle(color: hintColor, overflow: TextOverflow.clip),
       decoration: InputDecoration(
+          label: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              hintText,
+              style: const TextStyle(fontSize: 15),
+            ),
+          ),
+          alignLabelWithHint: true,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
           focusColor: primaryColor,
-          hintText: hintText,
           contentPadding: EdgeInsets.symmetric(horizontal: 30),
           border: InputBorder.none,
           filled: true,
-          hintStyle: const TextStyle(fontSize: 13),
+          labelStyle:
+              const TextStyle(fontSize: 15, overflow: TextOverflow.clip),
           fillColor: canvasColor,
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide.none,
