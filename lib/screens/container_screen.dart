@@ -41,7 +41,7 @@ class ContainerScreen extends ConsumerStatefulWidget {
 class _ContainerScreenState extends ConsumerState<ContainerScreen> {
   bool isFail = true;
   final screens = {
-   // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
+    // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
     ScanView.name: ViewContainer(child: ScanView()),
     SearchView.name: const SimpleViewContainer(child: SearchView()),
   };
@@ -52,6 +52,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,

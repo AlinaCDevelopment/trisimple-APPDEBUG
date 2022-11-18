@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.4.01+15
+version: 1.0.0+1
 
 environment:
   sdk: ">=2.18.1 <3.0.0"
@@ -33,7 +33,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter_icons:
-  image_path: "assets/icon.jpg"
+  image_path: "assets/icon.jpeg"
   android: true
   ios: true
 
@@ -52,7 +52,6 @@ flutter:
     - assets/images/scan.png
     - assets/images/en.png
     - assets/images/pt.png
-    - assets/images/spinner.gif
     - assets/images/overlayCircles.png
 
   fonts:

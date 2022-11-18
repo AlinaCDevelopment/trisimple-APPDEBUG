@@ -23,12 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
   int _step = 1;
   int _totalSteps = 12;
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Material(
-      color: Colors.black.withOpacity(0.8),
       child: Container(
         decoration: backgroundDecoration,
         child: Center(
