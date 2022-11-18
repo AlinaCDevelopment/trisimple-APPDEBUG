@@ -45,7 +45,6 @@ class MyApp extends ConsumerWidget {
 
     //ref.read(localeProvider.notifier).getLocaleFromPrefs();
     final locale = ref.watch(localeProvider);
-    bool _initialized = false;
 
     return MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -77,6 +76,8 @@ class MyApp extends ConsumerWidget {
     return FutureBuilder<bool>(
         future: ref.read(authProvider.notifier).authenticateFromPreviousLogs(),
         builder: (context, snapshot) {
+          SizeConfig.init(context);
+
           if (snapshot.hasData && snapshot.data != null) {
             if (snapshot.data!) {
               return ContainerScreen();

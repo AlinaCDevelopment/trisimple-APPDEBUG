@@ -64,7 +64,7 @@ class AuthScreen extends StatelessWidget {
       },
     );
   }
-
+//TODO Check internet connection all apps
   @override
   Widget build(BuildContext context) {
     return Scaffold(
