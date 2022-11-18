@@ -14,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:upgrader/upgrader.dart';
 
 import 'constants/colors.dart';
 import 'providers/locale_provider.dart';
@@ -69,34 +68,7 @@ class MyApp extends ConsumerWidget {
             hintColor: hintColor,
             iconTheme: const IconThemeData(color: backMaterialColor)),
         //themeMode: ThemeMode.dark,
-        home: FutureBuilder<ConnectivityResult>(
-            future: Connectivity().checkConnectivity(),
-            builder: (context, snapshot) {
-              print('built');
-              SizeConfig.init(context);
-              if (snapshot.hasData && snapshot.data != null) {
-                final isConnectedToWifi =
-                    snapshot.data == ConnectivityResult.wifi;
-                //  return const SplashScreen();
-                return isConnectedToWifi
-                    ? UpgradeAlert(
-                        upgrader: Upgrader(
-                            durationUntilAlertAgain: Duration(seconds: 0),
-                            // durationUntilAlertAgain: const Duration(hours: 8),
-                            // canDismissDialog: false,
-                            canDismissDialog: false,
-                            showIgnore: false,
-                            showLater: false,
-                            languageCode: locale.languageCode,
-                            dialogStyle: Platform.isIOS
-                                ? UpgradeDialogStyle.cupertino
-                                : UpgradeDialogStyle.material),
-                        child: _buildHome(ref),
-                      )
-                    : _buildHome(ref);
-              }
-              return Container();
-            }));
+        home: _buildHome(ref));
   }
 
   Widget _buildHome(WidgetRef ref) {
