@@ -122,11 +122,12 @@ class AuthScreen extends StatelessWidget {
   }
 }
 
+String _password = '';
+
 class AuthForm extends StatelessWidget {
   final inputSpacement = SizedBox(
     height: SizeConfig.screenHeight * 0.02,
   );
-  String _password = '';
   AuthForm({super.key});
 
   _buildSubmitButton() {
