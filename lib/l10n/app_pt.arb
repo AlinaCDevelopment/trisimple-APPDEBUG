@@ -2,6 +2,9 @@
     "search": "Procurar",
     "version": "versão",
 
+    "tryAgain": "Tente Novamente.",
+    "connectionError": "Erro de Ligação!",
+
     "exit": "SAIR",
     "scan": "SCAN",
     "pendingRecords": "Registos Pendentes",
@@ -11,16 +14,15 @@
     "platform": "Plataforma",
     "contactsLabel": "Contato responsável técnico\ndo evento para pedido de suporte:",
 
-
     "passwordHint": "Insere a palavra-passe",
     "signIn": "Registar",
     "wrongPassword": "A password inserida não está correta,\ntenta novamente.",
     "fillAllFields": "Todos os campos são obrigatórios,\ntenta novamente.",
 
-    "controlAccess": "CONTROLO\nDE ACESSOS",
     "reservedArea": "Área Reservada",
     "authorizedPeople": "Só é permitida a entrada a pessoas autorizadas pela Trisimple",
     "emailLabel": "Para mais informações envie email para:",
+   
     "approachNfc": "Pode aproximar.",
     "unavailableNfc": "NFC INDISPONÍVEL",
     

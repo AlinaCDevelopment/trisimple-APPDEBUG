@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:app_4/constants/assets_routes.dart';
+import '../../constants/assets_routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -95,7 +95,6 @@ class DialogMessage extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: GestureDetector(
-                    //TODO Use Icon
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Icon(

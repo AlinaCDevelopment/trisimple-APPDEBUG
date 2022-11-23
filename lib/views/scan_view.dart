@@ -1,24 +1,17 @@
-import 'dart:ui';
-
-import 'package:app_4/views/search_view.dart';
-import 'package:app_4/widgets/themed_button.dart';
-import 'package:app_4/widgets/ui/views_container.dart';
-
-import '../helpers/size_helper.dart';
-import '../providers/auth_provider.dart';
+import '../views/search_view.dart';
+import '../widgets/themed_button.dart';
 import '../providers/nfc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../constants/assets_routes.dart';
+import '../../constants/assets_routes.dart';
 import '../constants/colors.dart';
 import '../screens/container_screen.dart';
 import '../widgets/ui/dialog_messages.dart';
 import 'tagdata_view.dart';
 
 class ScanView extends ConsumerWidget {
-  const ScanView();
+  const ScanView({super.key});
 
   static const name = 'scan';
 
@@ -37,13 +30,13 @@ class ScanView extends ConsumerWidget {
     });
     if (tagFound) {
       ref.read(nfcProvider.notifier).readTag();
-      return TagDataView();
+      return const TagDataView();
     }
     return Builder(
       builder: (context) {
         if (ref.read(nfcProvider)?.tag != null) {
           ref.read(nfcProvider.notifier).readTag();
-          return TagDataView();
+          return const TagDataView();
         }
         return FutureBuilder(
           future: ref.read(nfcProvider.notifier).isNfcAvailable(),
@@ -57,14 +50,13 @@ class ScanView extends ConsumerWidget {
                 bodyPresented = Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Expanded(child: const ScranImage()),
+                    const Expanded(child: ScranImage()),
                     Padding(
                         padding: const EdgeInsets.only(
                             right: 60.0, left: 60.0, bottom: 10, top: 10),
                         child: ThemedButton(
-                            onTap: () => ref
-                                .read(viewProvider.notifier)
-                                .setView(SearchView.name),
+                            onTap: () => ref.read(viewProvider.notifier).state =
+                                SearchView.name,
                             text: AppLocalizations.of(context).search)),
                   ],
                 );

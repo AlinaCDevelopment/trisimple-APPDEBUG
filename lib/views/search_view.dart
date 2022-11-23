@@ -1,7 +1,7 @@
-import 'package:app_4/constants/colors.dart';
-import 'package:app_4/helpers/size_helper.dart';
-import 'package:app_4/widgets/themed_button.dart';
-import 'package:app_4/widgets/themed_input.dart';
+import '../constants/colors.dart';
+import '../helpers/size_helper.dart';
+import '../widgets/themed_button.dart';
+import '../widgets/themed_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

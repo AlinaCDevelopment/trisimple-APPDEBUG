@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:app_4/views/search_view.dart';
-import 'package:app_4/views/tagdata_view.dart';
+import '../views/search_view.dart';
+import '../views/tagdata_view.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
@@ -13,23 +13,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../constants/assets_routes.dart';
+import '../../constants/assets_routes.dart';
 import '../constants/colors.dart';
 import '../widgets/ui/views_container.dart';
 import 'auth_screen.dart';
 
-@immutable
-class ViewNotifier extends StateNotifier<String> {
-  ViewNotifier() : super(ScanView.name);
-
-  void setView(String routeName) async {
-    state = routeName;
-  }
-}
-
-final viewProvider = StateNotifierProvider<ViewNotifier, String>((ref) {
-  return ViewNotifier();
-});
+final viewProvider = StateProvider<String>(
+  (ref) => ScanView.name,
+);
 
 class ContainerScreen extends ConsumerStatefulWidget {
   const ContainerScreen({super.key});
@@ -47,7 +38,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
   };
   @override
   Widget build(BuildContext context) {
-    final _selectedRouteName = ref.watch(viewProvider);
+    final selectedRouteName = ref.watch(viewProvider);
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -139,7 +130,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                   //SCAN
                   DrawerTile(
                     onTap: () => _routeTileTapped(ScanView.name),
-                    isSelected: ScanView.name == _selectedRouteName,
+                    isSelected: ScanView.name == selectedRouteName,
                     title: AppLocalizations.of(context).scan.toUpperCase(),
                   ),
 
@@ -147,7 +138,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                   //SEARCH
                   DrawerTile(
                     onTap: () => _routeTileTapped(SearchView.name),
-                    isSelected: 'search' == _selectedRouteName,
+                    isSelected: 'search' == selectedRouteName,
                     title: AppLocalizations.of(context).search.toUpperCase(),
                   ),
 
@@ -212,14 +203,14 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
             ],
           ),
         ),
-        body: screens[_selectedRouteName]!,
+        body: screens[selectedRouteName]!,
       ),
     );
   }
 
   void _routeTileTapped(String name) {
     Navigator.pop(context);
-    ref.read(viewProvider.notifier).setView(name);
+    ref.read(viewProvider.notifier).state = name;
   }
 }
 

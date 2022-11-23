@@ -1,5 +1,5 @@
-import 'package:app_4/helpers/size_helper.dart';
-import 'package:app_4/providers/auth_provider.dart';
+import '../../helpers/size_helper.dart';
+import '../../providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

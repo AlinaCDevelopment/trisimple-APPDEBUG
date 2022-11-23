@@ -1,4 +1,4 @@
-name: app_4
+name: app_debug
 description: A new Flutter project.
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -17,7 +17,6 @@ dependencies:
   flutter_riverpod: ^2.0.2
   flutter_launcher_icons: ^0.10.0
   http: ^0.13.5
-  connectivity_plus: ^3.0.2
   shared_preferences: ^2.0.15
   flutter_localizations:
     sdk: flutter
