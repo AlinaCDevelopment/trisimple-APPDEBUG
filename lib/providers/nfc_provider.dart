@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -12,13 +13,9 @@ import '../models/event_tag.dart';
 @immutable
 class NfcState {
   EventTag? tag;
-  List<String>? bitesRead;
+  List<Iterable<int>>? bitesRead;
   late String? error;
-  Map<String, dynamic>? specs;
-  String? identifier;
-  String? timeout;
-  String? maxTransceiveLenght;
-  String? atqa;
+  String? specs;
   String? session;
 
   NfcState({
@@ -26,13 +23,9 @@ class NfcState {
     this.bitesRead,
     this.error,
     this.specs,
-    this.identifier,
-    this.timeout,
-    this.maxTransceiveLenght,
-    this.atqa,
     this.session,
   });
-  
+
   NfcState.error(this.error);
 }
 
@@ -50,25 +43,34 @@ class NfcNotifier extends StateNotifier<NfcState> {
         try {
           final mifare = MifareUltralight.from(tag);
           if (mifare != null) {
-            final startDate = await _readDateTime(mifare, _startDateOffsets);
-            final endDate = await _readDateTime(mifare, _endDateOffsets);
-            final id = await _readId();
-            final eventId = await _readEventId();
-            final bitesRead = await _readBites(mifare);
+            List<Iterable<int>> bites = List.empty(growable: true);
+            for (int i = 0; i < 30; i++) {
+              final page = await mifare.readPages(pageOffset: i);
+              print(page);
+              bites.add(page.getRange(0, 4));
+            }
+            final bitesRead = bites;
 
             final specs = tag.data;
-            final timeout = specs['timeout'];
-            final atqa = specs['atqa'];
-            final maxTransceiveLenght = specs['maxTransceiveLenght'];
+            var jsonSpecs = jsonEncode(specs)
+                .replaceAll('{', '\n{\n')
+                .replaceAll('}', '\n}\n')
+                .replaceAll(',"', ',\n          "')
+                .replaceAll('}\n,\n          "', '},\n"')
+                .replaceAll('}\n,\n          "', '},\n"');
 
-            state = NfcState(
-                tag: EventTag(id, eventId,
-                    startDate: startDate, endDate: endDate),
-                specs: specs,
-                timeout: timeout,
-                atqa: atqa,
-                maxTransceiveLenght: maxTransceiveLenght,
-                bitesRead: bitesRead);
+            EventTag? eventTag;
+            try {
+              final id = await _readId();
+              final eventId = await _readEventId();
+              final startDate = await _readDateTime(mifare, _startDateOffsets);
+              final endDate = await _readDateTime(mifare, _endDateOffsets);
+              eventTag =
+                  EventTag(id, eventId, startDate: startDate, endDate: endDate);
+            } catch (e) {}
+
+            state =
+                NfcState(tag: eventTag, specs: jsonSpecs, bitesRead: bitesRead);
           } else {
             state = NfcState(error: "A sua tag não é suportada!");
           }
@@ -121,13 +123,12 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return 0;
   }
 
-  Future<List<String>> _readBites(MifareUltralight tag) async {
-    List<String> bites = List.empty(growable: true);
-    //TODO Find max
-    for (int i = 0; i < 32; i++) {
+  Future<List<Iterable<int>>> _readBites(MifareUltralight tag) async {
+    List<Iterable<int>> bites = List.empty(growable: true);
+    for (int i = 0; i < 43; i++) {
       final page = await tag.readPages(pageOffset: i);
-      final pageText = String.fromCharCodes(page);
-      bites.add("${page.getRange(0, 4).toString()}\n     $pageText");
+      print(page);
+      bites.add(page.getRange(0, 4));
     }
     return bites;
   }

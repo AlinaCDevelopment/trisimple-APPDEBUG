@@ -33,7 +33,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
   bool isFail = true;
   final screens = {
     // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
-    ScanView.name: ViewContainer(child: ScanView()),
+    ScanView.name: ScanView(),
     SearchView.name: const SimpleViewContainer(child: SearchView()),
   };
   @override

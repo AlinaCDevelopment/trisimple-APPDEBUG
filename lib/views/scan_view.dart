@@ -8,6 +8,7 @@ import '../../constants/assets_routes.dart';
 import '../constants/colors.dart';
 import '../screens/container_screen.dart';
 import '../widgets/ui/dialog_messages.dart';
+import '../widgets/ui/views_container.dart';
 import 'tagdata_view.dart';
 
 class ScanView extends ConsumerWidget {
@@ -17,92 +18,116 @@ class ScanView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool tagFound = false;
-    ref.listen(nfcProvider, (previous, next) {
+    NfcState? tagFound = ref.watch(nfcProvider);
+    print('specs: ');
+    print(tagFound?.specs);
+    if (tagFound != null &&
+        tagFound.error != null &&
+        tagFound.error!.isNotEmpty) {
+      print('ERR: ');
+      print(tagFound.error);
+    }
+/* 
+    ref.listen(nfcProvider, (previous, next) async {
       if (next != null && next.error != null ||
           next != null && next.tag != null) {
         if (next.error != null && next.error!.isNotEmpty) {
           showMessageDialog(context, ScanErrorMessage(context));
         } else {
-          tagFound = true;
+          tagFound = next;
         }
       }
-    });
-    if (tagFound) {
-      ref.read(nfcProvider.notifier).readTag();
-      return const TagDataView();
-    }
-    return Builder(
-      builder: (context) {
-        if (ref.read(nfcProvider)?.tag != null) {
-          ref.read(nfcProvider.notifier).readTag();
-          return const TagDataView();
-        }
-        return FutureBuilder(
-          future: ref.read(nfcProvider.notifier).isNfcAvailable(),
-          builder: (context, snapshot) {
-            Widget? bodyPresented;
-            if (snapshot.hasData && snapshot.data != null) {
-              //REAL VERSION
-              if ((snapshot.data!)) {
-                ref.read(nfcProvider.notifier).readTag();
-
-                bodyPresented = Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Expanded(child: ScranImage()),
-                    Padding(
-                        padding: const EdgeInsets.only(
-                            right: 60.0, left: 60.0, bottom: 10, top: 10),
-                        child: ThemedButton(
-                            onTap: () => ref.read(viewProvider.notifier).state =
-                                SearchView.name,
-                            text: AppLocalizations.of(context).search)),
-                  ],
-                );
-                //TEST VERSION
-                /*
-            if ((true)) {
-              bodyPresented = GestureDetector(
-                  onTap: () {
-                    ref.read(nfcProvider.notifier).setDumbError();
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                    Expanded(child: const ScranImage()),
-                    Padding(
-                        padding: const EdgeInsets.only(
-                            right: 60.0, left: 60.0, bottom: 10, top: 10),
-                        child: ThemedButton(
-                            onTap: () => ref
-                                .read(viewProvider.notifier)
-                                .setView(SearchView.name),
-                            text: AppLocalizations.of(context).search)),
-                  ],
-                  ));*/
-              } else {
-                bodyPresented = Center(
-                    child: Padding(
-                  padding: const EdgeInsets.only(bottom: 100.0),
-                  child: Text(
-                    AppLocalizations.of(context).unavailableNfc,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                        shadows: [
-                          Shadow(offset: Offset(1, 1)),
-                          Shadow(offset: Offset(1, -1))
-                        ]),
+    }); */
+    return tagFound?.specs != null
+        ? Stack(
+            children: [
+              TagDataView(tagFound!),
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: (() => ref.read(nfcProvider.notifier).reset()),
+                  icon: Icon(
+                    Icons.keyboard_return,
+                    color: Colors.white,
                   ),
-                ));
-              }
-            }
-            return bodyPresented ?? Container();
-          },
-        );
-      },
-    );
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          )
+        : ViewContainer(
+            child: Builder(
+              builder: (context) {
+                return FutureBuilder(
+                  future: ref.read(nfcProvider.notifier).isNfcAvailable(),
+                  builder: (context, snapshot) {
+                    Widget? bodyPresented;
+                    if (snapshot.hasData && snapshot.data != null) {
+                      //REAL VERSION
+                      if ((snapshot.data!)) {
+                        ref.read(nfcProvider.notifier).readTag();
+
+                        bodyPresented = Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            const Expanded(child: ScranImage()),
+                            Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 60.0,
+                                    left: 60.0,
+                                    bottom: 10,
+                                    top: 10),
+                                child: ThemedButton(
+                                    onTap: () => ref
+                                        .read(viewProvider.notifier)
+                                        .state = SearchView.name,
+                                    text: AppLocalizations.of(context).search)),
+                          ],
+                        );
+                        //TEST VERSION
+                        /*
+              if ((true)) {
+                bodyPresented = GestureDetector(
+                    onTap: () {
+                      ref.read(nfcProvider.notifier).setDumbError();
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                      Expanded(child: const ScranImage()),
+                      Padding(
+                          padding: const EdgeInsets.only(
+                              right: 60.0, left: 60.0, bottom: 10, top: 10),
+                          child: ThemedButton(
+                              onTap: () => ref
+                                  .read(viewProvider.notifier)
+                                  .setView(SearchView.name),
+                              text: AppLocalizations.of(context).search)),
+                    ],
+                    ));*/
+                      } else {
+                        bodyPresented = Center(
+                            child: Padding(
+                          padding: const EdgeInsets.only(bottom: 100.0),
+                          child: Text(
+                            AppLocalizations.of(context).unavailableNfc,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                shadows: [
+                                  Shadow(offset: Offset(1, 1)),
+                                  Shadow(offset: Offset(1, -1))
+                                ]),
+                          ),
+                        ));
+                      }
+                    }
+                    return bodyPresented ?? Container();
+                  },
+                );
+              },
+            ),
+          );
   }
 }
 
