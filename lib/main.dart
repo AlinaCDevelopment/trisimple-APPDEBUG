@@ -39,6 +39,10 @@ class MyApp extends ConsumerWidget {
             fontFamily: 'Ubuntu',
             brightness: Brightness.dark,
             primarySwatch: primaryMaterialColor,
+            colorScheme: ColorScheme.fromSwatch(
+                accentColor: Colors.white,
+                brightness: Brightness.dark,
+                primarySwatch: backMaterialColor),
             scaffoldBackgroundColor: backMaterialColor,
             appBarTheme: const AppBarTheme(
               backgroundColor: appBarColor,

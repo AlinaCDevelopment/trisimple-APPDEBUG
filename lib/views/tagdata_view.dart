@@ -21,7 +21,11 @@ class TagDataView extends ConsumerWidget {
       //width: SizeConfig.screenWidth,
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(SizeConfig.screenWidth * 0.07),
+          padding: EdgeInsets.only(
+              top: SizeConfig.screenWidth * 0.07,
+              right: SizeConfig.screenWidth * 0.07,
+              left: SizeConfig.screenWidth * 0.07,
+              bottom: SizeConfig.screenWidth * 0.2),
           child: FittedBox(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -49,7 +53,7 @@ class TagDataView extends ConsumerWidget {
             height: 30,
           ),
           Text(
-            'SLOT: $i',
+            'SLOT: $i - PAGES (${i * 4}-${i * 4 + 3})',
             style: TextStyle(color: Colors.red),
           ),
           Text(

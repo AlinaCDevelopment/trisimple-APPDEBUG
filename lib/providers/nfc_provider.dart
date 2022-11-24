@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 
@@ -43,35 +44,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         try {
           final mifare = MifareUltralight.from(tag);
           if (mifare != null) {
-            List<Iterable<int>> bites = List.empty(growable: true);
-            for (int i = 0; i < 30; i++) {
-              final page = await mifare.readPages(pageOffset: i);
-              print(page);
-              print(String.fromCharCodes(page));
-              bites.add(page);
-            }
-            final bitesRead = bites;
-
-            final specs = tag.data;
-            var jsonSpecs = jsonEncode(specs)
-                .replaceAll('{', '\n{\n')
-                .replaceAll('}', '\n}\n')
-                .replaceAll(',"', ',\n          "')
-                .replaceAll('}\n,\n          "', '},\n"')
-                .replaceAll('}\n,\n          "', '},\n"');
-
-            EventTag? eventTag;
-            try {
-              final id = await _readId();
-              final eventId = await _readEventId();
-              final startDate = await _readDateTime(mifare, _startDateOffsets);
-              final endDate = await _readDateTime(mifare, _endDateOffsets);
-              eventTag =
-                  EventTag(id, eventId, startDate: startDate, endDate: endDate);
-            } catch (e) {}
-
-            state =
-                NfcState(tag: eventTag, specs: jsonSpecs, bitesRead: bitesRead);
+            await _readTag(mifare: mifare, tag: tag);
           } else {
             state = NfcState(error: "A sua tag não é suportada!");
           }
@@ -91,33 +64,19 @@ class NfcNotifier extends StateNotifier<NfcState> {
     );
   }
 
-  Future<void> testWrie() async {
+  Future<void> clearTag() async {
     await NfcManager.instance.startSession(
       onDiscovered: (tag) async {
         try {
           final mifare = MifareUltralight.from(tag);
 
           if (mifare != null) {
-            await mifare.writePage(
-                pageOffset: 20, data: Uint8List.fromList('fast'.codeUnits));
-            await mifare.writePage(
-                pageOffset: 21, data: Uint8List.fromList('ntag'.codeUnits));
-            print("done");
-            final res = await mifare.readPages(pageOffset: 20);
-            print('${res}: ${String.fromCharCodes(res)}');
+            for (int i = 2; i <= 9; i++) {
+              await _writeBlock(tag: mifare, block: i, dataString: '');
+            }
 
-            /*   for (int i = 10 - 1; i <= 12; i++) {
-              for (int y = 0; y < 12; y += 4) {
-                await mifare.writePage(
-                    pageOffset: i,
-                    data: Uint8List.fromList([
-                      ...ticketId.codeUnits.getRange(y, y + 3)
-                      // listToWrite[y],
-                      // listToWrite[y + 1],
-                      // listToWrite[y + 2],
-                      // listToWrite[y + 3]
-                    ]));
-              } */
+            print('SUCCESS ');
+            readTag();
           } else {
             state = NfcState.error("A sua tag não é suportada!");
           }
@@ -125,7 +84,6 @@ class NfcNotifier extends StateNotifier<NfcState> {
           if (platformException.message == 'Tag was lost.') {
             state = NfcState.error(
                 "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
-            print(platformException);
           } else {
             state = NfcState.error("Ocorreu um erro de plataforma.");
           }
@@ -136,62 +94,59 @@ class NfcNotifier extends StateNotifier<NfcState> {
     );
   }
 
-  Future<void> setTicketId(String ticketId) async {
+  Future<void> setTicketId(NfcTag tag, String ticketId) async {
     bool success = false;
-    await NfcManager.instance.startSession(
-      onDiscovered: (tag) async {
-        try {
-          final mifare = MifareUltralight.from(tag);
 
-          if (mifare != null) {
-            //SET NON USED VALUES AS 16
-            // var listToWrite = [];
-            /*  var listToWrite = List<int>.from([
-              ...ticketId.codeUnits,
-              List.filled(11 - ticketId.codeUnits.length, 16)
-            ]); */
-            List<int> listToWrite = List<int>.generate(12, (index) {
-              if (ticketId.codeUnits.length > index) {
-                return ticketId.codeUnits[index];
-              }
-              return 16;
-            });
-            print(listToWrite);
+    try {
+      final mifare = MifareUltralight.from(tag);
 
-            for (int i = 10 - 1; i <= 12; i++) {
-              for (int y = 0; y < 12; y += 4) {
-                await mifare.writePage(
-                    pageOffset: i,
-                    data: Uint8List.fromList([
-                      ...ticketId.codeUnits.getRange(y, y + 3)
-                      // listToWrite[y],
-                      // listToWrite[y + 1],
-                      // listToWrite[y + 2],
-                      // listToWrite[y + 3]
-                    ]));
-              }
-            }
-            print('GOT TO WRITE? : ');
-            success = true;
+      if (mifare != null) {
+        await _writeBlock(dataString: ticketId, block: 6, tag: mifare);
+        await readTag();
+      } else {
+        state = NfcState.error("A sua tag não é suportada!");
+      }
+    } on PlatformException catch (platformException) {
+      if (platformException.message == 'Tag was lost.') {
+        state = NfcState.error(
+            "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
+      } else {
+        state = NfcState.error("Ocorreu um erro de plataforma.");
+      }
+    } catch (e) {
+      state = NfcState.error("Ocorreu um erro durante a ESCRITA.");
+    }
+  }
 
-            state = NfcState();
-          } else {
-            state = NfcState.error("A sua tag não é suportada!");
-          }
-        } on PlatformException catch (platformException) {
-          if (platformException.message == 'Tag was lost.') {
-            state = NfcState.error(
-                "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
-          } else {
-            state = NfcState.error("Ocorreu um erro de plataforma.");
-          }
-        } catch (e) {
-          state = NfcState.error("Ocorreu um erro durante a ESCRITA.");
-        }
-      },
-    );
-    print('GOT TO WRITE? : $success');
-    //  return success;
+  Future<void> setDateTimes(
+      NfcTag tag, DateTime startDate, DateTime endDate) async {
+    try {
+      final mifare = MifareUltralight.from(tag);
+
+      if (mifare != null) {
+        await _writeBlock(
+            dataString: startDate.millisecondsSinceEpoch.toString(),
+            block: 7,
+            tag: mifare);
+
+        await _writeBlock(
+            dataString: startDate.millisecondsSinceEpoch.toString(),
+            block: 8,
+            tag: mifare);
+        await readTag();
+      } else {
+        state = NfcState.error("A sua tag não é suportada!");
+      }
+    } on PlatformException catch (platformException) {
+      if (platformException.message == 'Tag was lost.') {
+        state = NfcState.error(
+            "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
+      } else {
+        state = NfcState.error("Ocorreu um erro de plataforma.");
+      }
+    } catch (e) {
+      state = NfcState.error("Ocorreu um erro durante a ESCRITA.");
+    }
   }
 
   Future<bool> isNfcAvailable() async {
@@ -227,20 +182,74 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return 0;
   }
 
-  Future<List<Iterable<int>>> _readBites(MifareUltralight tag) async {
-    List<Iterable<int>> bites = List.empty(growable: true);
-    for (int i = 0; i < 43; i++) {
-      final page = await tag.readPages(pageOffset: i);
-      print(page);
-      print(String.fromCharCodes(page));
-      //bites.add(page.getRange(0, 4));
-      bites.add(page);
-    }
-    return bites;
+  Future<void> _writeBlock(
+      {required MifareUltralight tag,
+      required int block,
+      required String dataString}) async {
+    List<int> data = List<int>.generate(20, (index) {
+      if (dataString.codeUnits.length > index) {
+        return dataString.codeUnits[index];
+      }
+      return 0;
+    });
+    await tag.writePage(
+        pageOffset: block * 4,
+        data: Uint8List.fromList(data.getRange(0, 4).toList()));
+    await tag.writePage(
+        pageOffset: block * 4 + 1,
+        data: Uint8List.fromList(data.getRange(4, 8).toList()));
+    await tag.writePage(
+        pageOffset: block * 4 + 2,
+        data: Uint8List.fromList(data.getRange(8, 12).toList()));
+    await tag.writePage(
+        pageOffset: block * 4 + 3,
+        data: Uint8List.fromList(data.getRange(12, 16).toList()));
+    await tag.writePage(
+        pageOffset: block * 4 + 3,
+        data: Uint8List.fromList(data.getRange(16, 20).toList()));
+
+    print("DATA SAVED IN BLOCK $block | DATA SAVED : $dataString");
   }
 
   void setDumbError() {
     state = NfcState(error: "Ocorreu um erro de plataforma.");
+  }
+
+  Future<void> _readTag({
+    required MifareUltralight mifare,
+    required NfcTag tag,
+  }) async {
+    List<Iterable<int>> bites = List.empty(growable: true);
+    for (int i = 0; i < 10; i++) {
+      try {
+        final page = await mifare.readPages(pageOffset: i * 4);
+        print(page.getRange(page.length - 4, page.length));
+        print(String.fromCharCodes(page));
+        bites.add(page);
+      } catch (e) {
+        print('err: $i');
+      }
+    }
+    final bitesRead = bites;
+
+    final specs = tag.data;
+    var jsonSpecs = jsonEncode(specs)
+        .replaceAll('{', '\n{\n')
+        .replaceAll('}', '\n}\n')
+        .replaceAll(',"', ',\n          "')
+        .replaceAll('}\n,\n          "', '},\n"')
+        .replaceAll('}\n,\n          "', '},\n"');
+
+    EventTag? eventTag;
+    try {
+      final id = await _readId();
+      final eventId = await _readEventId();
+      final startDate = await _readDateTime(mifare, _startDateOffsets);
+      final endDate = await _readDateTime(mifare, _endDateOffsets);
+      eventTag = EventTag(id, eventId, startDate: startDate, endDate: endDate);
+    } catch (e) {}
+
+    state = NfcState(tag: eventTag, specs: jsonSpecs, bitesRead: bitesRead);
   }
 }
 
