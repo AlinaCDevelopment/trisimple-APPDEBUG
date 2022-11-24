@@ -1,10 +1,9 @@
 import 'package:app_debug/helpers/size_helper.dart';
+import 'package:http/retry.dart';
 
 import '../providers/nfc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../widgets/ui/dialog_messages.dart';
 
 class TagDataView extends ConsumerWidget {
   const TagDataView(
@@ -23,24 +22,48 @@ class TagDataView extends ConsumerWidget {
       child: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(SizeConfig.screenWidth * 0.07),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Text('Especificações: \n${tagData.specs}\n\n'),
-              Text('Specs: ${tagData.specs}'),
-              Text('Bites:'),
-              if (tagData.bitesRead != null)
-                ...tagData.bitesRead!.map((biteText) => Row(
-                      children: [
-                        Text(biteText.toString()),
-                        Text(String.fromCharCodes(biteText))
-                      ],
-                    ))
-            ],
+          child: FittedBox(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text('Especificações: \n${tagData.specs}\n\n'),
+                Text('Specs: ${tagData.specs}'),
+                Text('Bites:'),
+                if (tagData.bitesRead != null) ..._buildRows(),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildRows() {
+    List<Widget> rows = List<Widget>.empty(growable: true);
+    for (int i = 0; i < tagData.bitesRead!.length; i++) {
+      rows.add(Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            'SLOT: $i',
+            style: TextStyle(color: Colors.red),
+          ),
+          Text(
+            'CHARS: ${String.fromCharCodes(tagData.bitesRead![i])}',
+            style: TextStyle(color: Colors.yellow),
+          ),
+          Row(
+            children: [
+              Text(tagData.bitesRead![i].toString()),
+            ],
+          ),
+        ],
+      ));
+    }
+    return rows;
   }
 }

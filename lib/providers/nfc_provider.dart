@@ -47,7 +47,8 @@ class NfcNotifier extends StateNotifier<NfcState> {
             for (int i = 0; i < 30; i++) {
               final page = await mifare.readPages(pageOffset: i);
               print(page);
-              bites.add(page.getRange(0, 4));
+              print(String.fromCharCodes(page));
+              bites.add(page);
             }
             final bitesRead = bites;
 
@@ -90,6 +91,109 @@ class NfcNotifier extends StateNotifier<NfcState> {
     );
   }
 
+  Future<void> testWrie() async {
+    await NfcManager.instance.startSession(
+      onDiscovered: (tag) async {
+        try {
+          final mifare = MifareUltralight.from(tag);
+
+          if (mifare != null) {
+            await mifare.writePage(
+                pageOffset: 20, data: Uint8List.fromList('fast'.codeUnits));
+            await mifare.writePage(
+                pageOffset: 21, data: Uint8List.fromList('ntag'.codeUnits));
+            print("done");
+            final res = await mifare.readPages(pageOffset: 20);
+            print('${res}: ${String.fromCharCodes(res)}');
+
+            /*   for (int i = 10 - 1; i <= 12; i++) {
+              for (int y = 0; y < 12; y += 4) {
+                await mifare.writePage(
+                    pageOffset: i,
+                    data: Uint8List.fromList([
+                      ...ticketId.codeUnits.getRange(y, y + 3)
+                      // listToWrite[y],
+                      // listToWrite[y + 1],
+                      // listToWrite[y + 2],
+                      // listToWrite[y + 3]
+                    ]));
+              } */
+          } else {
+            state = NfcState.error("A sua tag não é suportada!");
+          }
+        } on PlatformException catch (platformException) {
+          if (platformException.message == 'Tag was lost.') {
+            state = NfcState.error(
+                "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
+            print(platformException);
+          } else {
+            state = NfcState.error("Ocorreu um erro de plataforma.");
+          }
+        } catch (e) {
+          state = NfcState.error("Ocorreu um erro durante a ESCRITA.");
+        }
+      },
+    );
+  }
+
+  Future<void> setTicketId(String ticketId) async {
+    bool success = false;
+    await NfcManager.instance.startSession(
+      onDiscovered: (tag) async {
+        try {
+          final mifare = MifareUltralight.from(tag);
+
+          if (mifare != null) {
+            //SET NON USED VALUES AS 16
+            // var listToWrite = [];
+            /*  var listToWrite = List<int>.from([
+              ...ticketId.codeUnits,
+              List.filled(11 - ticketId.codeUnits.length, 16)
+            ]); */
+            List<int> listToWrite = List<int>.generate(12, (index) {
+              if (ticketId.codeUnits.length > index) {
+                return ticketId.codeUnits[index];
+              }
+              return 16;
+            });
+            print(listToWrite);
+
+            for (int i = 10 - 1; i <= 12; i++) {
+              for (int y = 0; y < 12; y += 4) {
+                await mifare.writePage(
+                    pageOffset: i,
+                    data: Uint8List.fromList([
+                      ...ticketId.codeUnits.getRange(y, y + 3)
+                      // listToWrite[y],
+                      // listToWrite[y + 1],
+                      // listToWrite[y + 2],
+                      // listToWrite[y + 3]
+                    ]));
+              }
+            }
+            print('GOT TO WRITE? : ');
+            success = true;
+
+            state = NfcState();
+          } else {
+            state = NfcState.error("A sua tag não é suportada!");
+          }
+        } on PlatformException catch (platformException) {
+          if (platformException.message == 'Tag was lost.') {
+            state = NfcState.error(
+                "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
+          } else {
+            state = NfcState.error("Ocorreu um erro de plataforma.");
+          }
+        } catch (e) {
+          state = NfcState.error("Ocorreu um erro durante a ESCRITA.");
+        }
+      },
+    );
+    print('GOT TO WRITE? : $success');
+    //  return success;
+  }
+
   Future<bool> isNfcAvailable() async {
     return await NfcManager.instance.isAvailable();
   }
@@ -128,7 +232,9 @@ class NfcNotifier extends StateNotifier<NfcState> {
     for (int i = 0; i < 43; i++) {
       final page = await tag.readPages(pageOffset: i);
       print(page);
-      bites.add(page.getRange(0, 4));
+      print(String.fromCharCodes(page));
+      //bites.add(page.getRange(0, 4));
+      bites.add(page);
     }
     return bites;
   }

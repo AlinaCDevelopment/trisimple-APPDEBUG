@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:app_debug/views/write_view.dart';
+
 import '../views/search_view.dart';
 import '../views/tagdata_view.dart';
 
@@ -34,6 +36,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
   final screens = {
     // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
     ScanView.name: ScanView(),
+    WriteView.name: WriteView(),
     SearchView.name: const SimpleViewContainer(child: SearchView()),
   };
   @override
@@ -140,6 +143,13 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                     onTap: () => _routeTileTapped(SearchView.name),
                     isSelected: 'search' == selectedRouteName,
                     title: AppLocalizations.of(context).search.toUpperCase(),
+                  ),
+                  //============================================================================================
+                  //WRITE
+                  DrawerTile(
+                    onTap: () => _routeTileTapped(WriteView.name),
+                    isSelected: WriteView.name == selectedRouteName,
+                    title: 'WRITE',
                   ),
 
                   //============================================================================================
