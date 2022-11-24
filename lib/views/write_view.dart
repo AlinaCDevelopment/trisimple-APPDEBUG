@@ -74,7 +74,7 @@ class _WriteViewState extends ConsumerState<WriteView> {
                   onPressed: _storeDataToTag, child: Text('Write Data')),
               ElevatedButton(
                   onPressed: (() async {
-                    ref.read(nfcProvider.notifier).clearTag();
+                    ref.read(nfcProvider.notifier).clearTagInSession();
                   }),
                   child: Text('WIPE TAG')),
             ],
@@ -89,16 +89,17 @@ class _WriteViewState extends ConsumerState<WriteView> {
   }
 
   _storeDataToTag() async {
-    await NfcManager.instance.startSession(
-      onDiscovered: (tag) async {
-        await ref.read(nfcProvider.notifier).setTicketId(tag, _ticketId);
-        if (_firstDate != null && _lastDate != null) {
-          await ref
-              .read(nfcProvider.notifier)
-              .setDateTimes(tag, _firstDate!, _lastDate!);
-        }
-      },
-    );
+    await ref.read(nfcProvider.notifier).inSession((nfcTag, mifareTag) async {
+      await ref.read(nfcProvider.notifier).setTicketId(nfcTag, _ticketId);
+      if (_firstDate != null && _lastDate != null) {
+        await ref
+            .read(nfcProvider.notifier)
+            .setDateTimes(mifareTag, _firstDate!, _lastDate!);
+      }
+      await ref
+          .read(nfcProvider.notifier)
+          .readTag(mifareTag: mifareTag, nfcTag: nfcTag);
+    });
   }
 
   Future<DateTime?> _getDateTime() async {
