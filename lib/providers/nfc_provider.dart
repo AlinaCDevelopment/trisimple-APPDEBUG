@@ -33,7 +33,7 @@ class NfcState {
 
 @immutable
 class NfcNotifier extends StateNotifier<NfcState> {
-  final _eventIdBlock = 6;
+  final _ticketIdBlock = 6;
   final _startDateBlock = 7;
   final _lastDateBlock = 8;
 
@@ -123,7 +123,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
       if (mifare != null) {
         await _writeBlock(
-            dataString: ticketId, block: _eventIdBlock, tag: mifare);
+            dataString: ticketId, block: _ticketIdBlock, tag: mifare);
       } else {
         state = NfcState.error("A sua tag não é suportada!");
       }
@@ -142,6 +142,8 @@ class NfcNotifier extends StateNotifier<NfcState> {
   Future<void> setDateTimes(
       MifareUltralight mifare, DateTime startDate, DateTime endDate) async {
     if (mifare != null) {
+      print('MILISECONDS:');
+      print((startDate.millisecondsSinceEpoch));
       await _writeBlock(
           dataString: startDate.millisecondsSinceEpoch.toString(),
           block: _startDateBlock,
@@ -180,7 +182,9 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
   Future<DateTime> _readDateTime(MifareUltralight mifare, int block) async {
     final dataString = await _readBlock(tag: mifare, block: block);
-    return DateTime.fromMillisecondsSinceEpoch(int.parse(dataString));
+    //Multiply by 10 because we're losing a 0 when reading
+    var date = DateTime.fromMillisecondsSinceEpoch(int.parse(dataString) * 10);
+    return date;
   }
 
   Future<int> _readId() async {
@@ -194,6 +198,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
   Future<String> _readBlock(
       {required MifareUltralight tag, required int block}) async {
     final data = await tag.readPages(pageOffset: block * 4);
+    data.toList().removeWhere((element) => element == 16);
     final dataString = String.fromCharCodes(data);
     print('DATA READ IN BLOCK $block: $dataString');
     return dataString;
