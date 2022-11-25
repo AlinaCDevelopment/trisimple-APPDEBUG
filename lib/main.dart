@@ -1,6 +1,8 @@
+import 'package:app_debug/services/translation_service.dart';
+
 import '../helpers/size_helper.dart';
 import '../screens/splash_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../screens/container_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'constants/colors.dart';
 import 'providers/locale_provider.dart';
 import 'screens/auth_screen.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,17 +57,22 @@ class MyApp extends ConsumerWidget {
             canvasColor: Colors.white,
             hintColor: hintColor,
             iconTheme: const IconThemeData(color: backMaterialColor)),
-        home: _buildHome(ref));
+        home: _buildHome(ref, locale));
   }
 
-  Widget _buildHome(WidgetRef ref) {
-    return FutureBuilder<bool>(
-        future: ref.read(authProvider.notifier).authenticateFromPreviousLogs(),
+  Widget _buildHome(WidgetRef ref, Locale locale) {
+    return FutureBuilder<List<dynamic>>(
+        future: Future.wait([
+          ref.read(authProvider.notifier).authenticateFromPreviousLogs(),
+          MultiLang.init(locale)
+        ]),
         builder: (context, snapshot) {
           SizeConfig.init(context);
 
-          if (snapshot.hasData && snapshot.data != null) {
-            if (snapshot.data!) {
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              snapshot.data![0] != null) {
+            if (snapshot.data![0]) {
               return const ContainerScreen();
             } else {
               return AuthScreen();

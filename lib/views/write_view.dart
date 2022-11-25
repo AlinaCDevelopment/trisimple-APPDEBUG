@@ -90,7 +90,7 @@ class _WriteViewState extends ConsumerState<WriteView> {
 
   _storeDataToTag() async {
     await ref.read(nfcProvider.notifier).inSession((nfcTag, mifareTag) async {
-      await ref.read(nfcProvider.notifier).setTicketId(nfcTag, _ticketId);
+      await ref.read(nfcProvider.notifier).setTicketId(mifareTag, _ticketId);
       if (_firstDate != null && _lastDate != null) {
         await ref
             .read(nfcProvider.notifier)

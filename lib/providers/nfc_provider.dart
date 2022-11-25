@@ -1,15 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
-
 import '../models/event_tag.dart';
 
 @immutable
@@ -115,15 +109,13 @@ class NfcNotifier extends StateNotifier<NfcState> {
     }
   }
 
-  Future<void> setTicketId(NfcTag tag, String ticketId) async {
+  Future<void> setTicketId(MifareUltralight mifareTag, String ticketId) async {
     bool success = false;
 
     try {
-      final mifare = MifareUltralight.from(tag);
-
-      if (mifare != null) {
+      if (mifareTag != null) {
         await _writeBlock(
-            dataString: ticketId, block: _ticketIdBlock, tag: mifare);
+            dataString: ticketId, block: _ticketIdBlock, tag: mifareTag);
       } else {
         state = NfcState.error("A sua tag não é suportada!");
       }
