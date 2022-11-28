@@ -20,8 +20,6 @@ class ScanView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     NfcState? tagFound = ref.watch(nfcProvider);
-    print('specs: ');
-    print(tagFound?.specs);
     if (tagFound != null &&
         tagFound.error != null &&
         tagFound.error!.isNotEmpty) {
@@ -67,6 +65,7 @@ class ScanView extends ConsumerWidget {
                       //REAL VERSION
                       if ((snapshot.data!)) {
                         ref.read(nfcProvider.notifier).readTagInSession();
+                        // ref.read(nfcProvider.notifier).readClassicTag();
 
                         bodyPresented = Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,

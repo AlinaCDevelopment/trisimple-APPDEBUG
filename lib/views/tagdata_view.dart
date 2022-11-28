@@ -31,7 +31,6 @@ class TagDataView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Text('Especificações: \n${tagData.specs}\n\n'),
                 Text('Specs: ${tagData.specs}'),
                 Text('Bites:'),
                 if (tagData.bitesRead != null) ..._buildRows(),
