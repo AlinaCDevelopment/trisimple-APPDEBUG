@@ -149,7 +149,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
     EventTag? eventTag;
     String? error;
     try {
-      final id = await _readId();
+      final id = await _readId(nfcTag);
       final eventId = await _readEventId();
       final startDate = await _readDateTime(mifareTag, _startDateBlock);
       final endDate = await _readDateTime(mifareTag, _lastDateBlock);
@@ -238,12 +238,12 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return date;
   }
 
-  Future<int> _readId() async {
-    return 0;
+  Future<String> _readId(NfcTag tag) async {
+    return tag.data['mifareultralight']['identifier'].toString();
   }
 
-  Future<int> _readEventId() async {
-    return 0;
+   Future<String> _readEventId() async {
+    return '123';
   }
 
   Future<String> _readBlock(

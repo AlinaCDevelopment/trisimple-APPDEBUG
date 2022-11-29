@@ -10,13 +10,15 @@ import '../../helpers/size_helper.dart';
 import '../../models/event_tag.dart';
 
 class ScanErrorMessage extends StatelessWidget {
-  ScanErrorMessage(this.parentContext);
-  final BuildContext parentContext;
+  const ScanErrorMessage({this.message});
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
     return ScanDialogMessage(
-        title: MultiLang.texts.error, assetPngImgName: errorImgRoute);
+        title: MultiLang.texts.error,
+        content: message != null ? Text(message!) : null,
+        assetPngImgName: errorImgRoute);
   }
 }
 
@@ -140,6 +142,7 @@ class DialogMessage extends StatelessWidget {
 }
 
 Future<T?> showMessageDialog<T>(BuildContext context, Widget message) async {
+  if (Navigator.canPop(context)) Navigator.pop(context);
   return await showDialog<T>(
     context: context,
     barrierColor: Colors.transparent,
