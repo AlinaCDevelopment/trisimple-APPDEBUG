@@ -1,7 +1,7 @@
+import '../services/l10n/app_localizations.dart';
 import '../services/wifi_verification.dart';
 import 'package:flutter/material.dart';
 
-import '../services/translation_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../constants/assets_routes.dart';
 import '../constants/colors.dart';
@@ -71,7 +71,7 @@ class AuthScreen extends StatelessWidget {
     return Column(
       children: [
         Text(
-          MultiLang.texts.emailLabel,
+          AppLocalizations.of(context).emailLabel,
           style: const TextStyle(
             fontSize: 11,
           ),
@@ -86,7 +86,7 @@ class AuthScreen extends StatelessWidget {
           height: SizeConfig.screenHeight * 0.01,
         ),
         Text(
-          '${MultiLang.texts.version}: 1.0.0',
+          '${AppLocalizations.of(context).version}: 1.0.0',
           style: TextStyle(fontSize: 11, color: thirdColor),
           textAlign: TextAlign.center,
         ),
@@ -100,7 +100,7 @@ class AuthScreen extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            MultiLang.texts.reservedArea,
+            AppLocalizations.of(context).reservedArea,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -136,15 +136,8 @@ class AuthForm extends StatelessWidget {
       builder: (context, ref, container) {
         return ThemedButton(
             onTap: () async {
-              final isConnected = await checkWifi();
-              if (!isConnected) {
-                await showMessageDialog(
-                    context,
-                    DialogMessage(
-                      content: MultiLang.texts.connectionError,
-                      title: MultiLang.texts.tryAgain,
-                    ));
-              } else {
+              final isConnected = await checkWifiWithValidation(context);
+              if (isConnected) {
                 if (_password.isNotEmpty) {
                   bool valid = await ref
                       .read(authProvider.notifier)
@@ -160,18 +153,19 @@ class AuthForm extends StatelessWidget {
                         context,
                         DialogMessage(
                             title: 'Upsss!',
-                            content: MultiLang.texts.wrongPassword));
+                            content:
+                                AppLocalizations.of(context).wrongPassword));
                   }
                 } else {
                   await showMessageDialog(
                       context,
                       DialogMessage(
                           title: 'Upsss!',
-                          content: MultiLang.texts.fillAllFields));
+                          content: AppLocalizations.of(context).fillAllFields));
                 }
               }
             },
-            text: MultiLang.texts.signIn);
+            text: AppLocalizations.of(context).signIn);
       },
     );
   }
@@ -186,7 +180,7 @@ class AuthForm extends StatelessWidget {
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              MultiLang.texts.authorizedPeople,
+              AppLocalizations.of(context).authorizedPeople,
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -225,7 +219,7 @@ class _PasswordInputState extends State<PasswordInput> {
     return ThemedInput(
       onChanged: widget.onChanged,
       obscureText: _isPasswordHidden,
-      hintText: MultiLang.texts.passwordHint,
+      hintText: AppLocalizations.of(context).passwordHint,
       suffixIcon: IconButton(
         icon: Icon(
           _isPasswordHidden

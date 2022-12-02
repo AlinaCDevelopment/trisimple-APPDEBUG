@@ -3,11 +3,11 @@ import '../../providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../services/translation_service.dart';
 
 import '../../constants/assets_routes.dart';
 import '../../constants/colors.dart';
 import '../../constants/decorations.dart';
+import '../../services/l10n/app_localizations.dart';
 
 class ViewContainer extends ConsumerWidget {
   const ViewContainer({super.key, required this.child});
@@ -25,7 +25,7 @@ class ViewContainer extends ConsumerWidget {
             child: Column(
               children: [
                 Text(
-                  MultiLang.texts.platform,
+                  AppLocalizations.of(context).platform,
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 25,
@@ -58,7 +58,7 @@ class ViewContainer extends ConsumerWidget {
                       EdgeInsets.only(bottom: SizeConfig.screenHeight * 0.09),
                   child: Center(
                     child: Text(
-                      '${MultiLang.texts.version}: 1.0.0',
+                      '${AppLocalizations.of(context).version}: 1.0.0',
                       style: TextStyle(fontSize: 11, color: thirdColor),
                       textAlign: TextAlign.center,
                     ),
@@ -87,7 +87,7 @@ class SimpleViewContainer extends ConsumerWidget {
             child: Column(
               children: [
                 Text(
-                  MultiLang.texts.platform,
+                  AppLocalizations.of(context).platform,
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 25,
@@ -120,7 +120,7 @@ class SimpleViewContainer extends ConsumerWidget {
                       EdgeInsets.only(bottom: SizeConfig.screenHeight * 0.09),
                   child: Center(
                     child: Text(
-                      '${MultiLang.texts.version}: 1.0.0',
+                      '${AppLocalizations.of(context).version}: 1.0.0',
                       style: TextStyle(fontSize: 11, color: thirdColor),
                       textAlign: TextAlign.center,
                     ),

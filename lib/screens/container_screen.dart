@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_debug/views/write_view.dart';
 
+import '../services/l10n/app_localizations.dart';
 import '../views/search_view.dart';
 import '../views/tagdata_view.dart';
 
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 
-import '../services/translation_service.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -135,7 +135,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                   DrawerTile(
                     onTap: () => _routeTileTapped(ScanView.name),
                     isSelected: ScanView.name == selectedRouteName,
-                    title: MultiLang.texts.scan.toUpperCase(),
+                    title: AppLocalizations.of(context).scan.toUpperCase(),
                   ),
 
                   //============================================================================================
@@ -143,7 +143,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                   DrawerTile(
                     onTap: () => _routeTileTapped(SearchView.name),
                     isSelected: 'search' == selectedRouteName,
-                    title: MultiLang.texts.search.toUpperCase(),
+                    title: AppLocalizations.of(context).search.toUpperCase(),
                   ),
                   //============================================================================================
                   //WRITE
@@ -175,7 +175,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                           }
                         },
                         isSelected: false,
-                        title: MultiLang.texts.exit.toUpperCase(),
+                        title: AppLocalizations.of(context).exit.toUpperCase(),
                       );
                     },
                   ),
@@ -188,7 +188,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      MultiLang.texts.contactsLabel,
+                      AppLocalizations.of(context).contactsLabel,
                       style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const Text(

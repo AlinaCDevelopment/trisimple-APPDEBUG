@@ -1,13 +1,12 @@
 import 'dart:ui';
 
-import 'package:app_debug/services/translation_service.dart';
-
 import '../../constants/assets_routes.dart';
 
 import 'package:flutter/material.dart';
 
 import '../../helpers/size_helper.dart';
 import '../../models/event_tag.dart';
+import '../../services/l10n/app_localizations.dart';
 
 class ScanErrorMessage extends StatelessWidget {
   const ScanErrorMessage({this.message});
@@ -16,7 +15,7 @@ class ScanErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScanDialogMessage(
-        title: MultiLang.texts.error,
+        title: AppLocalizations.of(context).error,
         content: message != null ? Text(message!) : null,
         assetPngImgName: errorImgRoute);
   }

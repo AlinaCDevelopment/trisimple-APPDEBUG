@@ -1,9 +1,9 @@
+import '../services/l10n/app_localizations.dart';
 import '../views/search_view.dart';
 import '../widgets/themed_button.dart';
 import '../providers/nfc_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../services/translation_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../constants/assets_routes.dart';
 import '../constants/colors.dart';
@@ -81,7 +81,7 @@ class ScanView extends ConsumerWidget {
                                     onTap: () => ref
                                         .read(viewProvider.notifier)
                                         .state = SearchView.name,
-                                    text: MultiLang.texts.search)),
+                                    text: AppLocalizations.of(context).search)),
                           ],
                         );
                         //TEST VERSION
@@ -102,7 +102,7 @@ class ScanView extends ConsumerWidget {
                               onTap: () => ref
                                   .read(viewProvider.notifier)
                                   .setView(SearchView.name),
-                              text: MultiLang.texts.search)),
+                              text: AppLocalizations.of(context).search)),
                     ],
                     ));*/
                       } else {
@@ -110,7 +110,7 @@ class ScanView extends ConsumerWidget {
                             child: Padding(
                           padding: const EdgeInsets.only(bottom: 100.0),
                           child: Text(
-                            MultiLang.texts.unavailableNfc,
+                            AppLocalizations.of(context).unavailableNfc,
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 25,
@@ -152,7 +152,7 @@ class ScranImage extends StatelessWidget {
               ),
               Image.asset(scanImgRoute),
               Text(
-                MultiLang.texts.approachNfc,
+                AppLocalizations.of(context).approachNfc,
                 style: const TextStyle(fontSize: 22, color: backMaterialColor),
                 textAlign: TextAlign.center,
               ),
