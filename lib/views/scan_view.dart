@@ -64,7 +64,7 @@ class ScanView extends ConsumerWidget {
                     if (snapshot.hasData && snapshot.data != null) {
                       //REAL VERSION
                       if ((snapshot.data!)) {
-                        ref.read(nfcProvider.notifier).readTagInSession();
+                        ref.read(nfcProvider.notifier).readTagInSession(context);
                         // ref.read(nfcProvider.notifier).readClassicTag();
 
                         bodyPresented = Column(

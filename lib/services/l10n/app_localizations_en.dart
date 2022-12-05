@@ -71,6 +71,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unavailableNfc => 'NFC UNAVAILABLE';
 
   @override
+  String get unsupportedTag => 'The tag read is not supported!';
+
+  @override
+  String get tagLost => 'Tag was lost. \nKeep the bracelet close until results are shown.';
+
+  @override
+  String get platformError => 'A platform error occured.';
+
+  @override
+  String get processError => 'An error occured during the process.';
+
+  @override
   String get valid => 'VALID';
 
   @override

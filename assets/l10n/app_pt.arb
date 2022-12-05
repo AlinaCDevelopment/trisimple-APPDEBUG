@@ -25,6 +25,11 @@
    
     "approachNfc": "Pode aproximar.",
     "unavailableNfc": "NFC INDISPONÍVEL",
+
+    "unsupportedTag": "A tag lida não é suportada!",
+    "tagLost": "A tag foi perdida. \nMantenha a pulseira próxima até obter resultados.",
+    "platformError": "Ocorreu um erro de plataforma.",
+    "processError": "Ocorreu um erro durante o processo.",
     
     "codeInsertLabel": "Inserir CÓDIGO gravado no Chip da pulseira",
     "condeInsertHint": "Insere o código",

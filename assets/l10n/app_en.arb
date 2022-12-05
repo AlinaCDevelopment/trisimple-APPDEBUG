@@ -28,6 +28,11 @@
 
     "approachNfc": "May approach.",
     "unavailableNfc": "NFC UNAVAILABLE",
+    
+    "unsupportedTag": "The tag read is not supported!",
+    "tagLost": "Tag was lost. \nKeep the bracelet close until results are shown.",
+    "platformError": "A platform error occured.",
+    "processError": "An error occured during the process.",
 
     "valid": "VALID",
     "invalid": "INVALID",

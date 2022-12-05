@@ -225,6 +225,30 @@ abstract class AppLocalizations {
   /// **'NFC UNAVAILABLE'**
   String get unavailableNfc;
 
+  /// No description provided for @unsupportedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'The tag read is not supported!'**
+  String get unsupportedTag;
+
+  /// No description provided for @tagLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag was lost. \nKeep the bracelet close until results are shown.'**
+  String get tagLost;
+
+  /// No description provided for @platformError.
+  ///
+  /// In en, this message translates to:
+  /// **'A platform error occured.'**
+  String get platformError;
+
+  /// No description provided for @processError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occured during the process.'**
+  String get processError;
+
   /// No description provided for @valid.
   ///
   /// In en, this message translates to:
