@@ -10,23 +10,24 @@ import '../services/l10n/app_localizations.dart';
 
 @immutable
 class NfcState {
-   final EventTag? tag;
+  final EventTag? tag;
   final List<Iterable<int>>? bitesRead;
   final String? error;
   final String? specs;
-  final String? session;
+  final String? handle;
 
   const NfcState({
     this.tag,
     this.bitesRead,
     this.error,
     this.specs,
-    this.session,
+    this.handle,
   });
 }
 
 @immutable
 class NfcNotifier extends StateNotifier<NfcState> {
+  final _eventIdBlock = 5;
   final _ticketIdBlock = 6;
   final _startDateBlock = 7;
   final _lastDateBlock = 8;
@@ -48,12 +49,13 @@ class NfcNotifier extends StateNotifier<NfcState> {
           }
         } on PlatformException catch (platformException) {
           if (platformException.message == 'Tag was lost.') {
-            state = NfcState(error:AppLocalizations.of(context).tagLost);
+            state = NfcState(error: AppLocalizations.of(context).tagLost);
           } else {
-            state = NfcState(error:(AppLocalizations.of(context).platformError));
+            state =
+                NfcState(error: (AppLocalizations.of(context).platformError));
           }
         } catch (e) {
-          state = NfcState(error:(AppLocalizations.of(context).processError));
+          state = NfcState(error: (AppLocalizations.of(context).processError));
         }
       },
     );
@@ -132,6 +134,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         bites.add(page);
       } catch (e) {
         print('err: $i');
+        break;
       }
     }
     final bitesRead = bites;
@@ -148,16 +151,20 @@ class NfcNotifier extends StateNotifier<NfcState> {
     String? error;
     try {
       final id = await _readId(nfcTag);
-      final eventId = await _readEventId();
+      final eventId = await _readBlock(block: _eventIdBlock, tag: mifareTag);
       final startDate = await _readDateTime(mifareTag, _startDateBlock);
       final endDate = await _readDateTime(mifareTag, _lastDateBlock);
       eventTag = EventTag(id, eventId, startDate: startDate, endDate: endDate);
     } catch (e) {
-      error = ('This tag is not a valid event tag');
+      //error = ('This tag is not a valid event tag');
     }
 
     state = NfcState(
-        tag: eventTag, specs: jsonSpecs, bitesRead: bitesRead, error: error);
+        tag: eventTag,
+        handle: nfcTag.handle,
+        specs: jsonSpecs,
+        bitesRead: bitesRead,
+        error: error);
   }
 
   Future<void> clearTag(MifareUltralight mifareTag) async {
@@ -204,9 +211,9 @@ class NfcNotifier extends StateNotifier<NfcState> {
   }
 
   Future<void> readTagInSession(BuildContext context) async {
-    await inSession(context,
-        onDiscovered: (nfcTag, mifareTag) async =>
-            await readTag(mifareTag: mifareTag, nfcTag: nfcTag));
+    await inSession(context, onDiscovered: (nfcTag, mifareTag) async {
+      await readTag(mifareTag: mifareTag, nfcTag: nfcTag);
+    });
   }
 
   //==================================================================================================================
