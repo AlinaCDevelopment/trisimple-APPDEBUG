@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 import 'package:nfc_manager/platform_tags.dart' as tags;
+import '../constants/nfc_blocks.dart';
 import '../models/event_tag.dart';
 import '../services/l10n/app_localizations.dart';
 
@@ -27,12 +28,7 @@ class NfcState {
 
 @immutable
 class NfcNotifier extends StateNotifier<NfcState> {
-  final _eventIdBlock = 5;
-  final _ticketIdBlock = 6;
-  final _startDateBlock = 7;
-  final _lastDateBlock = 8;
-
-  NfcNotifier() : super(NfcState());
+  NfcNotifier() : super(const NfcState());
 
   Future<void> inSession(BuildContext context,
       {required Future<void> Function(NfcTag nfcTag, MifareUltralight mifareTag)
@@ -63,7 +59,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
   //==================================================================================================================
   //MAIN METHODS
-  Future<void> readClassicTag() async {
+/*   Future<void> readClassicTag() async {
     await NfcManager.instance.startSession(
       onDiscovered: (nfcTag) async {
         try {
@@ -103,24 +99,24 @@ class NfcNotifier extends StateNotifier<NfcState> {
             state = NfcState(
                 tag: null, specs: jsonSpecs, bitesRead: bitesRead, error: null);
           } else {
-            state = NfcState(error: "A sua tag não é suportada!");
+            state = const NfcState(error: "A sua tag não é suportada!");
           }
         } on PlatformException catch (platformException) {
           print(platformException.message);
           if (platformException.message == 'Tag was lost.') {
-            state = NfcState(
+            state = const NfcState(
                 error:
                     "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
           } else {
-            state = NfcState(error: "Ocorreu um erro de plataforma.");
+            state = const NfcState(error: "Ocorreu um erro de plataforma.");
           }
         } catch (e) {
-          state = NfcState(error: "Ocorreu um erro durante a leitura.");
+          state = const NfcState(error: "Ocorreu um erro durante a leitura.");
         }
       },
     );
   }
-
+ */
   Future<void> readTag({
     required MifareUltralight mifareTag,
     required NfcTag nfcTag,
@@ -151,9 +147,9 @@ class NfcNotifier extends StateNotifier<NfcState> {
     String? error;
     try {
       final id = await _readId(nfcTag);
-      final eventId = await _readBlock(block: _eventIdBlock, tag: mifareTag);
-      final startDate = await _readDateTime(mifareTag, _startDateBlock);
-      final endDate = await _readDateTime(mifareTag, _lastDateBlock);
+      final eventId = await _readBlock(block: eventIdBlock, tag: mifareTag);
+      final startDate = await _readDateTime(mifareTag, startDateBlock);
+      final endDate = await _readDateTime(mifareTag, lastDateBlock);
       eventTag = EventTag(id, eventId, startDate: startDate, endDate: endDate);
     } catch (e) {
       //error = ('This tag is not a valid event tag');
@@ -177,21 +173,19 @@ class NfcNotifier extends StateNotifier<NfcState> {
     bool success = false;
 
     await _writeBlock(
-        dataString: ticketId, block: _ticketIdBlock, tag: mifareTag);
+        dataString: ticketId, block: ticketIdBlock, tag: mifareTag);
   }
 
   Future<void> setDateTimes(
       MifareUltralight mifare, DateTime startDate, DateTime endDate) async {
-    print('MILISECONDS:');
-    print((startDate.millisecondsSinceEpoch));
     await _writeBlock(
         dataString: startDate.millisecondsSinceEpoch.toString(),
-        block: _startDateBlock,
+        block: startDateBlock,
         tag: mifare);
 
     await _writeBlock(
         dataString: endDate.millisecondsSinceEpoch.toString(),
-        block: _lastDateBlock,
+        block: lastDateBlock,
         tag: mifare);
   }
 
@@ -200,7 +194,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
   }
 
   void reset() {
-    state = NfcState();
+    state = const NfcState();
   }
 
   //==================================================================================================================
@@ -228,10 +222,6 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
   Future<String> _readId(NfcTag tag) async {
     return tag.data['mifareultralight']['identifier'].toString();
-  }
-
-  Future<String> _readEventId() async {
-    return '123';
   }
 
   Future<String> _readBlock(
