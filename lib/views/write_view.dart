@@ -76,7 +76,7 @@ class _WriteViewState extends ConsumerState<WriteView> {
                   onPressed: (() async {
                     ref.read(nfcProvider.notifier).clearTagInSession(context);
                   }),
-                  child: Text('WIPE TAG')),
+                  child: Text('Wipe Tag')),
             ],
           ),
           if (nfcState != null &&
