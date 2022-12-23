@@ -31,12 +31,12 @@ class NfcNotifier extends StateNotifier<NfcState> {
   NfcNotifier() : super(const NfcState());
 
   Future<void> inSession(BuildContext context,
-      {required Future<void> Function(NfcTag nfcTag, MifareUltralight mifareTag)
+      {required Future<void> Function(NfcTag nfcTag, MifareClassic mifareTag)
           onDiscovered}) async {
     await NfcManager.instance.startSession(
       onDiscovered: (tag) async {
         try {
-          final mifare = MifareUltralight.from(tag);
+          final mifare = MifareClassic.from(tag);
           if (mifare != null) {
             await onDiscovered(tag, mifare);
           } else {
@@ -61,14 +61,14 @@ class NfcNotifier extends StateNotifier<NfcState> {
   //MAIN METHODS
 
   Future<void> readTag({
-    required MifareUltralight mifareTag,
+    required MifareClassic mifareTag,
     required NfcTag nfcTag,
   }) async {
     List<Iterable<int>> bites = List.empty(growable: true);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 40; i++) {
       try {
-        final page = await mifareTag.readPages(pageOffset: i * 4);
-        print(page.getRange(page.length - 4, page.length));
+        final page = await _readPages(tag: mifareTag, pageOffset: i * 4);
+        // print(page.getRange(page.length - 4, page.length));
         print(String.fromCharCodes(page));
         bites.add(page);
       } catch (e) {
@@ -106,13 +106,13 @@ class NfcNotifier extends StateNotifier<NfcState> {
         error: error);
   }
 
-  Future<void> clearTag(MifareUltralight mifareTag) async {
+  Future<void> clearTag(MifareClassic mifareTag) async {
     for (int i = 2; i <= 9; i++) {
       await _writeBlock(tag: mifareTag, block: i, dataString: '');
     }
   }
 
-  Future<void> setTicketId(MifareUltralight mifareTag, String ticketId) async {
+  Future<void> setTicketId(MifareClassic mifareTag, String ticketId) async {
     bool success = false;
 
     await _writeBlock(
@@ -120,7 +120,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
   }
 
   Future<void> setDateTimes(
-      MifareUltralight mifare, DateTime startDate, DateTime endDate) async {
+      MifareClassic mifare, DateTime startDate, DateTime endDate) async {
     await _writeBlock(
         dataString: startDate.millisecondsSinceEpoch.toString(),
         block: startDateBlock,
@@ -132,14 +132,14 @@ class NfcNotifier extends StateNotifier<NfcState> {
         tag: mifare);
   }
 
-  Future<void> setTitle(MifareUltralight mifare, String title) async {
+  Future<void> setTitle(MifareClassic mifare, String title) async {
     final part1 = title.substring(1, 20);
     final part2 = title.characters.length > 20 ? title.substring(21) : '';
     await _writeBlock(dataString: part1, block: titleBlock1, tag: mifare);
     await _writeBlock(dataString: part2, block: titleBlock2, tag: mifare);
   }
 
-  Future<String> _readTitle(MifareUltralight mifare) async {
+  Future<String> _readTitle(MifareClassic mifare) async {
     final part1 = await _readBlock(tag: mifare, block: titleBlock1);
     final part2 = await _readBlock(tag: mifare, block: titleBlock2);
     return '$part1$part2';
@@ -169,7 +169,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
   //==================================================================================================================
   //PRIVATE METHODS
 
-  Future<DateTime> _readDateTime(MifareUltralight mifare, int block) async {
+  Future<DateTime> _readDateTime(MifareClassic mifare, int block) async {
     final dataString = await _readBlock(tag: mifare, block: block);
     //Multiply by 10 because we're losing a 0 when reading
     var date = DateTime.fromMillisecondsSinceEpoch(int.parse(dataString) * 10);
@@ -177,31 +177,43 @@ class NfcNotifier extends StateNotifier<NfcState> {
   }
 
   Future<String> _readId(NfcTag tag) async {
-    return tag.data['mifareultralight']['identifier'].toString();
+    return tag.data['MifareClassic']['identifier'].toString();
   }
 
   Future<String> _readBlock(
-      {required MifareUltralight tag, required int block}) async {
-    final data = await tag.readPages(pageOffset: block * 4);
+      {required MifareClassic tag, required int block}) async {
+    throw ('unimplemented');
+    final data = await tag.readBlock(blockIndex: block);
     data.toList().removeWhere((element) => element == 16);
     final dataString = String.fromCharCodes(data);
     print('DATA READ IN BLOCK $block: $dataString');
     return dataString;
   }
 
-  Future<String> _readClassicBlock(
-      {required tags.MifareClassic tag, required int block}) async {
-    final data = await tag.readBlock(blockIndex: 0);
+  Future<Uint8List> _readPages(
+      {required MifareClassic tag, required int pageOffset}) async {
+    final List<int> bytes = List.empty(growable: true);
+    for (var i = pageOffset; i < pageOffset + 3; i++) {
+      try {
+        final blockData = await tag.readBlock(blockIndex: pageOffset);
+        bytes.addAll(blockData);
+      } catch (e) {
+        print(e);
+      }
+    }
+    final data = await tag.readBlock(blockIndex: pageOffset);
+
     data.toList().removeWhere((element) => element == 16);
     final dataString = String.fromCharCodes(data);
-    print('DATA READ IN BLOCK $block: $dataString');
-    return dataString;
+    print('DATA READ IN BLOCK $pageOffset: $dataString');
+    return Uint8List.fromList(bytes);
   }
 
   Future<void> _writeBlock(
-      {required MifareUltralight tag,
+      {required MifareClassic tag,
       required int block,
       required String dataString}) async {
+    throw ('unimplemented'); /* 
     List<int> data = List<int>.generate(20, (index) {
       if (dataString.codeUnits.length > index) {
         return dataString.codeUnits[index];
@@ -225,7 +237,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         data: Uint8List.fromList(data.getRange(16, 20).toList()));
 
     print("DATA SAVED IN BLOCK $block | DATA SAVED : $dataString");
-    await _readBlock(block: block, tag: tag);
+    await _readBlock(block: block, tag: tag); */
   }
 }
 

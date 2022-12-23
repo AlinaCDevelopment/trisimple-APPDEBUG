@@ -12,6 +12,7 @@ class TagDataView extends ConsumerWidget {
   });
   static const name = 'tagdata';
   final NfcState tagData;
+  final double _textSize = 15;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,12 +28,19 @@ class TagDataView extends ConsumerWidget {
               left: SizeConfig.screenWidth * 0.07,
               bottom: SizeConfig.screenWidth * 0.2),
           child: FittedBox(
+            fit: BoxFit.scaleDown,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Specs: ${tagData.specs}'),
-                Text('Bites:'),
+                Text(
+                  'Specs: ${tagData.specs}',
+                  style: TextStyle(fontSize: _textSize),
+                ),
+                Text(
+                  'Bites:',
+                  style: TextStyle(fontSize: _textSize),
+                ),
                 if (tagData.bitesRead != null) ..._buildRows(),
               ],
             ),
@@ -53,11 +61,11 @@ class TagDataView extends ConsumerWidget {
           ),
           Text(
             'SLOT: $i - PAGES (${i * 4}-${i * 4 + 3})',
-            style: TextStyle(color: Colors.red),
+            style: TextStyle(color: Colors.red, fontSize: _textSize),
           ),
           Text(
             'CHARS: ${String.fromCharCodes(tagData.bitesRead![i])}',
-            style: TextStyle(color: Colors.yellow),
+            style: TextStyle(color: Colors.yellow, fontSize: _textSize),
           ),
           Row(
             children: [
