@@ -53,7 +53,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         } catch (e) {
           state = NfcState(error: (AppLocalizations.of(context).processError));
         }
-      },
+      }, //TODO SET UP ACCOUNT AND COMMITTO GITHUB CLASSIC-1K BRANCH
     );
   }
 
