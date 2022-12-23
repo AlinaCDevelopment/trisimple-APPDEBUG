@@ -59,64 +59,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
 
   //==================================================================================================================
   //MAIN METHODS
-/*   Future<void> readClassicTag() async {
-    await NfcManager.instance.startSession(
-      onDiscovered: (nfcTag) async {
-        try {
-          final mifareTag = MifareClassic.from(nfcTag);
-          if (mifareTag != null) {
-            List<Iterable<int>> bites = List.empty(growable: true);
-            // mifareTag.
-            //  final authenticated = await mifareTag.authenticateSectorWithKeyB(
-            ////      sectorIndex: 0,
-            //    key: Uint8List.fromList('ffffffffffff'.codeUnits));
-            for (int i = 0; i < 39; i++) {
-              try {
-                // print('auth: $authenticated');
-                //https://stackoverflow.com/questions/49879110/write-and-read-data-to-mifare-classic-1k-nfc-tag
-                //TODO LATER IGNORE READING MIFARECLASSIC FOR NOW
-                final page = await mifareTag.readBlock(blockIndex: i);
-                print('$i: $page');
-                // print(page.getRange(page.length - 4, page.length));
-                print(String.fromCharCodes(page));
-                bites.add(page);
-              } catch (e) {
-                print('err: $i');
-                if (e is PlatformException)
-                  print((e as PlatformException).message);
-              }
-            }
-            final bitesRead = bites;
 
-            final specs = nfcTag.data;
-            var jsonSpecs = jsonEncode(specs)
-                .replaceAll('{', '\n{\n')
-                .replaceAll('}', '\n}\n')
-                .replaceAll(',"', ',\n          "')
-                .replaceAll('}\n,\n          "', '},\n"')
-                .replaceAll('}\n,\n          "', '},\n"');
-
-            state = NfcState(
-                tag: null, specs: jsonSpecs, bitesRead: bitesRead, error: null);
-          } else {
-            state = const NfcState(error: "A sua tag não é suportada!");
-          }
-        } on PlatformException catch (platformException) {
-          print(platformException.message);
-          if (platformException.message == 'Tag was lost.') {
-            state = const NfcState(
-                error:
-                    "A tag foi perdida. \nMantenha a tag próxima até obter resultados.");
-          } else {
-            state = const NfcState(error: "Ocorreu um erro de plataforma.");
-          }
-        } catch (e) {
-          state = const NfcState(error: "Ocorreu um erro durante a leitura.");
-        }
-      },
-    );
-  }
- */
   Future<void> readTag({
     required MifareUltralight mifareTag,
     required NfcTag nfcTag,
@@ -187,6 +130,19 @@ class NfcNotifier extends StateNotifier<NfcState> {
         dataString: endDate.millisecondsSinceEpoch.toString(),
         block: lastDateBlock,
         tag: mifare);
+  }
+
+  Future<void> setTitle(MifareUltralight mifare, String title) async {
+    final part1 = title.substring(1, 20);
+    final part2 = title.characters.length > 20 ? title.substring(21) : '';
+    await _writeBlock(dataString: part1, block: titleBlock1, tag: mifare);
+    await _writeBlock(dataString: part2, block: titleBlock2, tag: mifare);
+  }
+
+  Future<String> _readTitle(MifareUltralight mifare) async {
+    final part1 = await _readBlock(tag: mifare, block: titleBlock1);
+    final part2 = await _readBlock(tag: mifare, block: titleBlock2);
+    return '$part1$part2';
   }
 
   Future<bool> isNfcAvailable() async {

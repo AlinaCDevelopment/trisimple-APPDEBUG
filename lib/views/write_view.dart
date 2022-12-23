@@ -18,6 +18,7 @@ class WriteView extends ConsumerStatefulWidget {
 
 class _WriteViewState extends ConsumerState<WriteView> {
   String _ticketId = '';
+  String _title = '';
   DateTime? _firstDate;
   DateTime? _lastDate;
 
@@ -36,6 +37,17 @@ class _WriteViewState extends ConsumerState<WriteView> {
             onChanged: (value) {
               setState(() {
                 _ticketId = value;
+              });
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(label: Text('Título Bilhete')),
+            inputFormatters: [
+              new LengthLimitingTextInputFormatter(40),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _title = value;
               });
             },
           ),
@@ -91,7 +103,10 @@ class _WriteViewState extends ConsumerState<WriteView> {
   _storeDataToTag() async {
     await ref.read(nfcProvider.notifier).inSession(context,
         onDiscovered: (nfcTag, mifareTag) async {
-      await ref.read(nfcProvider.notifier).setTicketId(mifareTag, _ticketId);
+      if (_title.isNotEmpty)
+        await ref.read(nfcProvider.notifier).setTitle(mifareTag, _title);
+      if (_ticketId.isNotEmpty)
+        await ref.read(nfcProvider.notifier).setTicketId(mifareTag, _ticketId);
       if (_firstDate != null && _lastDate != null) {
         await ref
             .read(nfcProvider.notifier)
