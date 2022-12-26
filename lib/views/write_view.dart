@@ -92,8 +92,8 @@ class _WriteViewState extends ConsumerState<WriteView> {
             ],
           ),
           if (nfcState != null &&
-              nfcState.bitesRead != null &&
-              nfcState.bitesRead!.isNotEmpty)
+              nfcState.bytesRead != null &&
+              nfcState.bytesRead!.isNotEmpty)
             Expanded(child: TagDataView(nfcState)),
         ],
       ),

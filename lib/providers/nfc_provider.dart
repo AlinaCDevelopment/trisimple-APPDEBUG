@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_nfc_mifare/flutter_nfc_mifare.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
@@ -8,18 +9,20 @@ import 'package:nfc_manager/platform_tags.dart' as tags;
 import '../constants/nfc_blocks.dart';
 import '../models/event_tag.dart';
 import '../services/l10n/app_localizations.dart';
+import 'package:flutter_nfc_mifare/flutter_nfc_mifare.dart' as mifares;
+import 'package:flutter_nfc_mifare/MF1.dart' as mf1;
 
 @immutable
 class NfcState {
   final EventTag? tag;
-  final List<Iterable<int>>? bitesRead;
+  final List<Iterable<int>>? bytesRead;
   final String? error;
   final String? specs;
   final String? handle;
 
   const NfcState({
     this.tag,
-    this.bitesRead,
+    this.bytesRead,
     this.error,
     this.specs,
     this.handle,
@@ -53,7 +56,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         } catch (e) {
           state = NfcState(error: (AppLocalizations.of(context).processError));
         }
-      }, //TODO SET UP ACCOUNT AND COMMITTO GITHUB CLASSIC-1K BRANCH
+      }, //TODO read the same number of bytes as you previously did with mifare classic
     );
   }
 
@@ -67,7 +70,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
     List<Iterable<int>> bites = List.empty(growable: true);
     for (int i = 0; i < 40; i++) {
       try {
-        final page = await _readPages(tag: mifareTag, pageOffset: i * 4);
+        final page = await _readSectorData(tag: mifareTag, sector: i * 4);
         // print(page.getRange(page.length - 4, page.length));
         print(String.fromCharCodes(page));
         bites.add(page);
@@ -102,7 +105,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
         tag: eventTag,
         handle: nfcTag.handle,
         specs: jsonSpecs,
-        bitesRead: bitesRead,
+        bytesRead: bitesRead,
         error: error);
   }
 
@@ -190,22 +193,35 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return dataString;
   }
 
-  Future<Uint8List> _readPages(
-      {required MifareClassic tag, required int pageOffset}) async {
+//TODO LATER CONFIRM ULTRALIGHT NORMAL READING
+  Future<Uint8List> _readSectorData(
+      {required MifareClassic tag, required int sector}) async {
+    //   mifares.FlutterNfcMifare mifare;
+    //   FlutterNfcMifare.readMF1();
     final List<int> bytes = List.empty(growable: true);
-    for (var i = pageOffset; i < pageOffset + 3; i++) {
+    //Reading the 16 bytes of each 4 blocks inside a sector
+
+    for (var i = sector; i < 4; i++) {
       try {
-        final blockData = await tag.readBlock(blockIndex: pageOffset);
-        bytes.addAll(blockData);
+        //aUTHEN
+        Uint8List key = Uint8List.fromList([255, 255, 255, 255, 255, 255]);
+        final success =
+            await tag.authenticateSectorWithKeyA(sectorIndex: sector, key: key);
+        if (!success) print('sucess auth : $success');
+        if (success) {
+          final blockData = await tag.readBlock(blockIndex: i);
+          print('lenght: ' + blockData.length.toString());
+          bytes.addAll(blockData);
+        }
       } catch (e) {
         print(e);
       }
     }
-    final data = await tag.readBlock(blockIndex: pageOffset);
+    //final data = await tag.readBlock(blockIndex: sector);
 
-    data.toList().removeWhere((element) => element == 16);
-    final dataString = String.fromCharCodes(data);
-    print('DATA READ IN BLOCK $pageOffset: $dataString');
+    //data.toList().removeWhere((element) => element == 16);
+    //final dataString = String.fromCharCodes(data);
+    //print('DATA READ IN BLOCK $sector: $dataString');
     return Uint8List.fromList(bytes);
   }
 
