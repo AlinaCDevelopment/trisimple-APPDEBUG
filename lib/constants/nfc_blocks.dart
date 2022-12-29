@@ -1,4 +1,3 @@
-//TODO CHANGE ESSENTIAL BLOCKS TO CLOSER TO 1 TO READ FASTER
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
