@@ -150,7 +150,9 @@ class DialogMessage extends StatelessWidget {
 }
 
 Future<T?> showMessageDialog<T>(BuildContext context, Widget message) async {
-  if (Navigator.canPop(context)) Navigator.pop(context);
+  if (ModalRoute.of(context)?.isCurrent != true && Navigator.canPop(context)) {
+    Navigator.pop(context);
+  }
   return await showDialog<T>(
     context: context,
     barrierColor: Colors.transparent,

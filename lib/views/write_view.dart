@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/platform_tags.dart';
 
 import '../providers/nfc_provider.dart';
 
@@ -18,6 +19,7 @@ class WriteView extends ConsumerStatefulWidget {
 
 class _WriteViewState extends ConsumerState<WriteView> {
   String _ticketId = '';
+  String _eventId = '';
   String _title = '';
   DateTime? _firstDate;
   DateTime? _lastDate;
@@ -37,6 +39,17 @@ class _WriteViewState extends ConsumerState<WriteView> {
             onChanged: (value) {
               setState(() {
                 _ticketId = value;
+              });
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(label: Text('ID Evento')),
+            inputFormatters: [
+              new LengthLimitingTextInputFormatter(20),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _eventId = value;
               });
             },
           ),
@@ -103,18 +116,30 @@ class _WriteViewState extends ConsumerState<WriteView> {
   _storeDataToTag() async {
     await ref.read(nfcProvider.notifier).inSession(context,
         onDiscovered: (nfcTag, mifareTag) async {
-      if (_title.isNotEmpty)
-        await ref.read(nfcProvider.notifier).setTitle(mifareTag, _title);
-      if (_ticketId.isNotEmpty)
-        await ref.read(nfcProvider.notifier).setTicketId(mifareTag, _ticketId);
-      if (_firstDate != null && _lastDate != null) {
+      try {
+        if (_title.isNotEmpty)
+          await ref.read(nfcProvider.notifier).setTitle(mifareTag, _title);
+        if (_ticketId.isNotEmpty && _eventId.isNotEmpty)
+          await ref
+              .read(nfcProvider.notifier)
+              .setTicketAndEventsIds(mifareTag, _ticketId, _eventId);
+        if (_firstDate != null && _lastDate != null) {
+          await ref
+              .read(nfcProvider.notifier)
+              .setDateTimes(mifareTag, _firstDate!, _lastDate!);
+        }
         await ref
             .read(nfcProvider.notifier)
-            .setDateTimes(mifareTag, _firstDate!, _lastDate!);
+            .readTag(mifareTag: mifareTag, nfcTag: nfcTag);
+      } catch (e) {
+        print('error writing!\n$e');
+        if (e is PlatformException) {
+          print(e.code);
+          print(e.message);
+          print(e.details);
+          print(e.stacktrace);
+        }
       }
-      await ref
-          .read(nfcProvider.notifier)
-          .readTag(mifareTag: mifareTag, nfcTag: nfcTag);
     });
   }
 

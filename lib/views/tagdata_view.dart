@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TagDataView extends ConsumerWidget {
-  const TagDataView(
+  TagDataView(
     this.tagData, {
     super.key,
   });
@@ -18,6 +18,7 @@ class TagDataView extends ConsumerWidget {
   final NfcState tagData;
 
   final double _textSize = 15;
+  final _categoryStyle = TextStyle(fontSize: 17, color: Colors.amber);
 
   //=========================================================================================================================================================
   //BUILD METHOD
@@ -42,12 +43,37 @@ class TagDataView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Specs: ${tagData.specs}',
-                  style: TextStyle(fontSize: _textSize),
+                  '1 - Dados pulseira:',
+                  style: _categoryStyle,
                 ),
                 Text(
-                  'Bites:',
+                  tagData.specs ?? '',
                   style: TextStyle(fontSize: _textSize),
+                ),
+                if (tagData.tag != null)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '2 - Bilhete escrito:',
+                        style: _categoryStyle,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text('Date inicio: ${tagData.tag!.startDate}'),
+                      Text('Date fim: ${tagData.tag!.endDate}'),
+                      Text('Id bilhete: ${tagData.tag!.ticketId}'),
+                      Text('Id evento: ${tagData.tag!.eventID}'),
+                      SizedBox(
+                        height: 10,
+                      )
+                    ],
+                  ),
+                Text(
+                  '3 - Bytes:',
+                  style: _categoryStyle,
                 ),
                 if (tagData.bytesRead != null) ..._buildRows(),
               ],
@@ -64,11 +90,13 @@ class TagDataView extends ConsumerWidget {
   //---------------------------------------------------------------------------------------------------------------------------------------------------------
   //UI METHODS
   List<Widget> _buildRows() {
-    final _byteGroupsLentgh = 8;
+    final _byteBlockSize = 16;
     List<Widget> rows = List<Widget>.empty(growable: true);
-    for (int i = 0; i < tagData.bytesRead!.length; i++) {
-      final separatedBytes =
-          _separateList(tagData.bytesRead![i].toList(), _byteGroupsLentgh);
+    for (int sectorIndex = 0;
+        sectorIndex < tagData.bytesRead!.length;
+        sectorIndex++) {
+      final separatedBytes = _separateList(
+          tagData.bytesRead![sectorIndex].toList(), _byteBlockSize);
 
       rows.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,19 +105,66 @@ class TagDataView extends ConsumerWidget {
             height: 30,
           ),
           Text(
-            'SLOT: $i - BYTES (${i * 16}-${i * 16 + 15})',
+            'SECTOR: $sectorIndex - BYTES (${sectorIndex * (16 * 4)}-${sectorIndex * (16 * 4) + (16 * 4) - 1})',
             style: TextStyle(color: Colors.red, fontSize: _textSize),
           ),
           Text(
-            'CHARS: ${String.fromCharCodes(tagData.bytesRead![i])}',
-            style: TextStyle(color: Colors.yellow, fontSize: _textSize),
+            'CHARS: ${String.fromCharCodes(tagData.bytesRead![sectorIndex])}',
+            style: TextStyle(
+                color: Color.fromARGB(255, 175, 255, 95), fontSize: _textSize),
           ),
           Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: separatedBytes
-                  .map((byteGroup) => Text(byteGroup.toString()))
-                  .toList()),
+              children: separatedBytes.map((byteGroup) {
+                final blockIndex = separatedBytes.indexOf(byteGroup);
+                final totalBlockIndex = blockIndex + ((sectorIndex) * 4);
+                final bytesRange =
+                    '(${blockIndex * 16}-${blockIndex * 16 + 15})';
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    (blockIndex != 3)
+                        ? (blockIndex == 0 && sectorIndex == 0)
+                            ? Text(
+                                'BLOCK 0-0 (0-15) - MANUFACTURER BLOCK',
+                                style: TextStyle(
+                                    color: Colors.yellow, fontSize: _textSize),
+                              )
+                            : Text(
+                                'BLOCK ${blockIndex}-${totalBlockIndex} $bytesRange ',
+                                style: TextStyle(
+                                    color: Colors.yellow, fontSize: _textSize),
+                              )
+                        : Text(
+                            'BLOCK 3-${totalBlockIndex} $bytesRange - SECTOR TRAILER $sectorIndex',
+                            style: TextStyle(
+                                color: Colors.yellow, fontSize: _textSize),
+                          ),
+                    SizedBox(
+                      width: SizeConfig.screenWidth,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(byteGroup.toString()),
+                          //TODO WRITE AND GET NEEDED TAG VALUES IN 1K AND CREATE NEW BRANCHES FOR THE OTHER APPS WITH 1K
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Text(
+                              String.fromCharCodes(byteGroup),
+                              style: TextStyle(
+                                  color: Colors.greenAccent,
+                                  fontSize: _textSize - 5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }).toList()),
         ],
       ));
     }
