@@ -96,7 +96,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
     EventTag? eventTag;
     String? error;
     try {
-      final id = await _readId(nfcTag);
+      final id = await _readId(mifareTag);
       final ticketAndEventBytes = (await _readBlockAsBytes(mifareTag,
           storageSlot: ticketIdEventIdStorage));
       final ticketIdBytes = ticketAndEventBytes.getRange(0, 8);
@@ -217,9 +217,10 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return date;
   }
 
-  Future<String> _readId(NfcTag tag) async {
-    return 'TODO GET FROM 0-0 BLOCK';
-    return tag.data['MifareClassic']['identifier'].toString();
+  Future<String> _readId(MifareClassic tag) async {
+    final manufacturerData =
+        await _readBlockAsBytes(tag, storageSlot: manufacturerBlockStorage);
+    return manufacturerData.toString();
   }
 
   Future<String> _readBlockAsString(MifareClassic tag,

@@ -35,3 +35,6 @@ const starttDateStorage = NfcStorageSlot(1, [0]);
 
 ///The storage slot for the ticket's end date
 const endDateStorage = NfcStorageSlot(1, [1]);
+
+///The storage slot for the ticket's manufacturerblock which serves as the id
+const manufacturerBlockStorage = NfcStorageSlot(0, [0]);
