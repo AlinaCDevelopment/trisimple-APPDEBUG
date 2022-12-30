@@ -99,18 +99,19 @@ class NfcNotifier extends StateNotifier<NfcState> {
       final id = await _readId(mifareTag);
       final ticketAndEventBytes = (await _readBlockAsBytes(mifareTag,
           storageSlot: ticketIdEventIdStorage));
-      final ticketIdBytes = ticketAndEventBytes.getRange(0, 8);
-      final eventIdBytes = ticketAndEventBytes.getRange(8, 15);
-      final ticketId = String.fromCharCodes(ticketIdBytes);
-      final eventId = String.fromCharCodes(eventIdBytes);
+      final ticketIdBytes =
+          ticketAndEventBytes.getRange(0, 8).where((element) => element != 0);
+      final eventIdBytes =
+          ticketAndEventBytes.getRange(8, 15).where((element) => element != 0);
+      final ticketId = int.parse(String.fromCharCodes(ticketIdBytes));
+      final eventId = int.parse(String.fromCharCodes(eventIdBytes));
       final startDate = await _readDateTime(mifareTag, starttDateStorage);
       final endDate = await _readDateTime(mifareTag, endDateStorage);
       final title =
           await _readBlockAsString(mifareTag, storageSlot: titleStorage);
       eventTag = EventTag(id, eventId, ticketId,
-          startDate: startDate, endDate: endDate);
+          title: title, startDate: startDate, endDate: endDate);
     } catch (e) {
-      //TODO Fix datetimes
       print('err getting event tag: $e');
       if (e is FormatException) {
         print('source: ${e.message.toString()}');

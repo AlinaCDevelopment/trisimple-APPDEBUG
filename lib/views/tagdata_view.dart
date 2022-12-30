@@ -62,6 +62,7 @@ class TagDataView extends ConsumerWidget {
                       SizedBox(
                         height: 10,
                       ),
+                      Text('Titulo: ${tagData.tag!.title}'),
                       Text('Date inicio: ${tagData.tag!.startDate}'),
                       Text('Date fim: ${tagData.tag!.endDate}'),
                       Text('Id bilhete: ${tagData.tag!.ticketId}'),

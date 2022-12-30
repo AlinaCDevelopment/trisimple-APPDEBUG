@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_debug/views/write_view.dart';
+import 'package:open_settings/open_settings.dart';
 
 import '../services/l10n/app_localizations.dart';
 import '../views/search_view.dart';
@@ -136,6 +137,15 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                     onTap: () => _routeTileTapped(ScanView.name),
                     isSelected: ScanView.name == selectedRouteName,
                     title: AppLocalizations.of(context).scan.toUpperCase(),
+                  ),
+                  //============================================================================================
+                  //SETTINGS
+                  DrawerTile(
+                    onTap: () {
+                      OpenSettings.openNFCSetting();
+                    },
+                    isSelected: false,
+                    title: 'NFC',
                   ),
 
                   //============================================================================================
