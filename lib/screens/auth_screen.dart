@@ -151,7 +151,7 @@ class AuthForm extends StatelessWidget {
                   } else {
                     await showMessageDialog(
                         context,
-                        DialogMessage(
+                        MessageDialog(
                             title: 'Upsss!',
                             content:
                                 AppLocalizations.of(context).wrongPassword));
@@ -159,7 +159,7 @@ class AuthForm extends StatelessWidget {
                 } else {
                   await showMessageDialog(
                       context,
-                      DialogMessage(
+                      MessageDialog(
                           title: 'Upsss!',
                           content: AppLocalizations.of(context).fillAllFields));
                 }

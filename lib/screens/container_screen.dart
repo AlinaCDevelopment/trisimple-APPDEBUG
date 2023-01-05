@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_debug/views/config_tag_view.dart';
 import 'package:app_debug/views/write_view.dart';
 import 'package:open_settings/open_settings.dart';
 
@@ -39,6 +40,7 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
     // TagDataView.name: const SimpleViewContainer(child: TagDataView()),
     ScanView.name: ScanView(),
     WriteView.name: WriteView(),
+    ConfigTagView.name: ConfigTagView(),
     SearchView.name: const SimpleViewContainer(child: SearchView()),
   };
   @override
@@ -139,13 +141,11 @@ class _ContainerScreenState extends ConsumerState<ContainerScreen> {
                     title: AppLocalizations.of(context).scan.toUpperCase(),
                   ),
                   //============================================================================================
-                  //SETTINGS
+                  //CONFIGURACOES
                   DrawerTile(
-                    onTap: () {
-                      OpenSettings.openNFCSetting();
-                    },
-                    isSelected: false,
-                    title: 'NFC',
+                    onTap: () => _routeTileTapped(ConfigTagView.name),
+                    isSelected: ConfigTagView.name == selectedRouteName,
+                    title: 'Configurar tag',
                   ),
 
                   //============================================================================================

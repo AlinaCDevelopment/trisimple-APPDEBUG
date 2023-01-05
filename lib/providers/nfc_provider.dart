@@ -11,15 +11,17 @@ import '../services/l10n/app_localizations.dart';
 
 @immutable
 class NfcState {
-  final EventTag? tag;
+  final Bilhete? bilhete;
+  final String? internalId;
   final List<Iterable<int>>? bytesRead;
   final String? error;
   final String? specs;
   final String? handle;
 
   const NfcState({
-    this.tag,
+    this.bilhete,
     this.bytesRead,
+    this.internalId,
     this.error,
     this.specs,
     this.handle,
@@ -93,10 +95,11 @@ class NfcNotifier extends StateNotifier<NfcState> {
         .replaceAll('}\n,\n          "', '},\n"')
         .replaceAll('}\n,\n          "', '},\n"');
 
-    EventTag? eventTag;
+    Bilhete? eventTag;
     String? error;
+    final internalId = await _readInternalId(mifareTag);
     try {
-      final id = await _readId(mifareTag);
+      //Reading the ticket and ebent ids from the block where they are both stored
       final ticketAndEventBytes = (await _readBlockAsBytes(mifareTag,
           storageSlot: ticketIdEventIdStorage));
       final ticketIdBytes =
@@ -105,12 +108,18 @@ class NfcNotifier extends StateNotifier<NfcState> {
           ticketAndEventBytes.getRange(8, 15).where((element) => element != 0);
       final ticketId = int.parse(String.fromCharCodes(ticketIdBytes));
       final eventId = int.parse(String.fromCharCodes(eventIdBytes));
+
+      final balance = await _readBalance(mifareTag);
+
       final startDate = await _readDateTime(mifareTag, starttDateStorage);
       final endDate = await _readDateTime(mifareTag, endDateStorage);
       final title =
           await _readBlockAsString(mifareTag, storageSlot: titleStorage);
-      eventTag = EventTag(id, eventId, ticketId,
-          title: title, startDate: startDate, endDate: endDate);
+      eventTag = Bilhete(internalId, eventId, ticketId,
+          title: title,
+          balance: balance,
+          startDate: startDate,
+          endDate: endDate);
     } catch (e) {
       print('err getting event tag: $e');
       if (e is FormatException) {
@@ -119,9 +128,10 @@ class NfcNotifier extends StateNotifier<NfcState> {
     }
 
     state = NfcState(
-        tag: eventTag,
+        bilhete: eventTag,
         handle: nfcTag.handle,
         specs: jsonSpecs,
+        internalId: internalId,
         bytesRead: bitesRead,
         error: error);
   }
@@ -130,6 +140,46 @@ class NfcNotifier extends StateNotifier<NfcState> {
   ///This sets most of its bytes to 0
   Future<void> clearTag(MifareClassic mifareTag) async {
     throw (UnimplementedError());
+  }
+
+  ///Reduces from the [balance] of the [Bilhete] stored in the [mifareTag] the [amount] specified
+  ///
+  ///Returns false if the [balance] insde the [mifareTag] is smaller than [amount]
+  Future<bool> reduceBalance(MifareClassic mifareTag, double amount) async {
+    final currentBalance = await _readBalance(mifareTag);
+    if (amount > currentBalance) {
+      return false;
+    }
+    final newBalance = (currentBalance - amount).toString();
+    await _writeString(
+        tag: mifareTag, storageSlot: balanceStorage, dataString: newBalance);
+    return true;
+  }
+  //TODO USE THESE IN THE NEW SCREEN
+
+  ///Adds to the [balance] of the [Bilhete] stored in the [mifareTag] the [amount] specified
+  Future<void> increaseBalance(MifareClassic mifareTag, double amount) async {
+    final currentBalance = await _readBalance(mifareTag);
+    final newBalance = (currentBalance + amount).toString();
+    await _writeString(
+        tag: mifareTag, storageSlot: balanceStorage, dataString: newBalance);
+  }
+
+  Future<void> setDateTimes(
+      MifareClassic mifare, DateTime? startDate, DateTime? endDate) async {
+    await _writeString(
+        dataString: startDate == null
+            ? 'null'
+            : startDate.millisecondsSinceEpoch.toString(),
+        storageSlot: starttDateStorage,
+        tag: mifare);
+
+    await _writeString(
+        dataString: endDate == null
+            ? 'null'
+            : endDate.millisecondsSinceEpoch.toString(),
+        storageSlot: endDateStorage,
+        tag: mifare);
   }
 
   /// Stores the [ticketId] in the [mifareTag]
@@ -146,19 +196,6 @@ class NfcNotifier extends StateNotifier<NfcState> {
         block: ticketIdEventIdStorage.blocksInSector.single,
         sector: ticketIdEventIdStorage.sector,
         bytes: [...ticketPart, ...eventPart]);
-  }
-
-  Future<void> setDateTimes(
-      MifareClassic mifare, DateTime startDate, DateTime endDate) async {
-    await _writeString(
-        dataString: startDate.millisecondsSinceEpoch.toString(),
-        storageSlot: starttDateStorage,
-        tag: mifare);
-
-    await _writeString(
-        dataString: endDate.millisecondsSinceEpoch.toString(),
-        storageSlot: endDateStorage,
-        tag: mifare);
   }
 
   Future<void> setTitle(MifareClassic mifare, String title) async {
@@ -189,6 +226,8 @@ class NfcNotifier extends StateNotifier<NfcState> {
     state = const NfcState();
   }
 
+  Future<void> testSetAuth(MifareClassic mifare) async {}
+
   //==================================================================================================================
   //QUICK METHODS
   Future<void> clearTagInSession(BuildContext context) async {
@@ -218,7 +257,16 @@ class NfcNotifier extends StateNotifier<NfcState> {
     return date;
   }
 
-  Future<String> _readId(MifareClassic tag) async {
+  Future<double> _readBalance(
+    MifareClassic mifareTag,
+  ) async {
+    final balanceString =
+        await _readBlockAsString(mifareTag, storageSlot: balanceStorage);
+
+    return double.parse(balanceString);
+  }
+
+  Future<String> _readInternalId(MifareClassic tag) async {
     final manufacturerData =
         await _readBlockAsBytes(tag, storageSlot: manufacturerBlockStorage);
     return manufacturerData.toString();
@@ -259,7 +307,6 @@ class NfcNotifier extends StateNotifier<NfcState> {
   }
 }
 
-//TODO LATER CONFIRM ULTRALIGHT NORMAL READING
 Future<Uint8List> _readSectorData(
     {required MifareClassic tag, required int sector}) async {
   //   mifares.FlutterNfcMifare mifare;
@@ -324,6 +371,19 @@ Future<void> _writeBytesBlock(
   final data = Uint8List.fromList(bytes);
 
   await tag.authenticateSectorWithKeyA(sectorIndex: sector, key: keyB);
+  final blockIndex = block + sector * 4;
+  await tag.writeBlock(blockIndex: blockIndex, data: data);
+}
+
+Future<void> _writeBytesBlockWithKey(
+    {required MifareClassic tag,
+    required int block,
+    required int sector,
+    required Uint8List key,
+    required List<int> bytes}) async {
+  final data = Uint8List.fromList(bytes);
+
+  await tag.authenticateSectorWithKeyA(sectorIndex: sector, key: key);
   final blockIndex = block + sector * 4;
   await tag.writeBlock(blockIndex: blockIndex, data: data);
 }

@@ -17,13 +17,18 @@ Future<bool> checkWifi() async {
 Future<bool> checkWifiWithValidation(BuildContext context) async {
   final isConnected = await checkWifi();
   print(isConnected);
-  if (!isConnected)
-    await showMessageDialog(
-      context,
-      DialogMessage(
-        content: AppLocalizations.of(context).connectionError,
-        title: AppLocalizations.of(context).tryAgain,
-      ),
-    );
+  if (!isConnected) {
+    showWifiErrorMessage(context);
+  }
   return isConnected;
+}
+
+Future<void> showWifiErrorMessage(BuildContext context) async {
+  await showMessageDialog(
+    context,
+    MessageDialog(
+      title: AppLocalizations.of(context).connectionError,
+      content: AppLocalizations.of(context).tryAgain,
+    ),
+  );
 }

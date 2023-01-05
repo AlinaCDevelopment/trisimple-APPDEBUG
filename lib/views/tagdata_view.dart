@@ -50,7 +50,7 @@ class TagDataView extends ConsumerWidget {
                   tagData.specs ?? '',
                   style: TextStyle(fontSize: _textSize),
                 ),
-                if (tagData.tag != null)
+                if (tagData.bilhete != null)
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,11 +62,11 @@ class TagDataView extends ConsumerWidget {
                       SizedBox(
                         height: 10,
                       ),
-                      Text('Titulo: ${tagData.tag!.title}'),
-                      Text('Date inicio: ${tagData.tag!.startDate}'),
-                      Text('Date fim: ${tagData.tag!.endDate}'),
-                      Text('Id bilhete: ${tagData.tag!.ticketId}'),
-                      Text('Id evento: ${tagData.tag!.eventID}'),
+                      Text('Titulo: ${tagData.bilhete!.title}'),
+                      Text('Date inicio: ${tagData.bilhete!.startDate}'),
+                      Text('Date fim: ${tagData.bilhete!.endDate}'),
+                      Text('Id bilhete: ${tagData.bilhete!.ticketId}'),
+                      Text('Id evento: ${tagData.bilhete!.eventID}'),
                       SizedBox(
                         height: 10,
                       )

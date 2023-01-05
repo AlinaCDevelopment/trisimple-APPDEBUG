@@ -58,7 +58,7 @@ class MyApp extends ConsumerWidget {
             hintColor: hintColor,
             iconTheme: const IconThemeData(color: backMaterialColor)),
         home: _buildHome(ref, locale));
-  }
+  }//
 
   Widget _buildHome(WidgetRef ref, Locale locale) {
     return FutureBuilder<bool>(

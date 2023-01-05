@@ -87,8 +87,8 @@ class ScanDialogMessage extends StatelessWidget {
   }
 }
 
-class DialogMessage extends StatelessWidget {
-  const DialogMessage({super.key, required this.title, required this.content});
+class MessageDialog extends StatelessWidget {
+  const MessageDialog({super.key, required this.title, required this.content});
   final String title;
   final String content;
 

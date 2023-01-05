@@ -30,6 +30,9 @@ const titleStorage = NfcStorageSlot(2, [0, 1, 2]);
 /// 2nd 8 bytes of the single value in [blocksInSector] are assigned to the eventId
 const ticketIdEventIdStorage = NfcStorageSlot(0, [1]);
 
+///The storage slot for the ticket's balance/saldo
+const balanceStorage = NfcStorageSlot(0, [2]);
+
 ///The storage slot for the ticket's start date
 const starttDateStorage = NfcStorageSlot(1, [0]);
 
