@@ -1,11 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.albinet.trisimple.appdebug">
-    <uses-permission android:name="android.permission.INTERNET"/>
+    package="com.albinet.trisimple.app_debug">
+
     <uses-permission android:name="android.permission.NFC"/>
-    <uses-feature android:name="android.hardware.nfc" android:required="false"/> 
-    <uses-permission android:name="android.per  +mission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
    <application
-        android:label="App Debug - Trisimple"
+        android:label="app_debug"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -26,10 +25,7 @@
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.HOME"/>
-                <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

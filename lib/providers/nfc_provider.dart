@@ -252,8 +252,7 @@ class NfcNotifier extends StateNotifier<NfcState> {
     final dataString =
         (await _readBlockAsString(mifare, storageSlot: storageSlot));
     print(int.parse(dataString));
-    //Multiply by 10 because we're losing a 0 when reading
-    var date = DateTime.fromMillisecondsSinceEpoch(int.parse(dataString) * 10);
+    var date = DateTime.fromMillisecondsSinceEpoch(int.parse(dataString));
     return date;
   }
 
