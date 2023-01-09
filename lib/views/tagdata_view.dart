@@ -5,6 +5,8 @@ import '../providers/nfc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/nfc_provider_base.dart';
+
 class TagDataView extends ConsumerWidget {
   TagDataView(
     this.tagData, {

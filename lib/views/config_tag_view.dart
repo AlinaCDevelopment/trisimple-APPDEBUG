@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/nfc_provider.dart';
+
+import '../providers/nfc_provider.dart';
 import '../widgets/ui/dialog_messages.dart';
 
 class ConfigTagView extends ConsumerStatefulWidget {

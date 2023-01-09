@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import '../providers/nfc_provider_base.dart';
 import '../services/l10n/app_localizations.dart';
 import '../views/search_view.dart';
 import '../widgets/nfc_scanner..dart';
 import '../widgets/themed_button.dart';
+
 import '../providers/nfc_provider.dart';
 import 'package:flutter/material.dart';
 

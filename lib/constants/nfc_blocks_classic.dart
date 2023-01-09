@@ -26,7 +26,7 @@ const titleStorage = NfcStorageSlot(2, [0, 1, 2]);
 ///The storage slot for the ids of the ticket and of the vent
 ///
 ///The 16 bytes of the block is in this case devided for both ids:
-/// 1st 8 bytes of the single value in [blocksInSector] are assigned to the ticketId
+/// 1st 8 bytes of the single value in [blocksInSector] are  assigned to the ticketId
 /// 2nd 8 bytes of the single value in [blocksInSector] are assigned to the eventId
 const ticketIdEventIdStorage = NfcStorageSlot(0, [1]);
 
@@ -34,7 +34,7 @@ const ticketIdEventIdStorage = NfcStorageSlot(0, [1]);
 const balanceStorage = NfcStorageSlot(0, [2]);
 
 ///The storage slot for the ticket's start date
-const starttDateStorage = NfcStorageSlot(1, [0]);
+const startDateStorage = NfcStorageSlot(1, [0]);
 
 ///The storage slot for the ticket's end date
 const endDateStorage = NfcStorageSlot(1, [1]);

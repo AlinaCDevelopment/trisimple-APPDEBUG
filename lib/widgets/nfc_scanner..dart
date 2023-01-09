@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/assets_routes.dart';
 import '../constants/colors.dart';
+
 import '../providers/nfc_provider.dart';
 import '../screens/container_screen.dart';
 import '../services/l10n/app_localizations.dart';
@@ -48,16 +49,30 @@ class NfcScanner extends StatelessWidget {
                   if (snapshot.hasData && snapshot.data != null) {
                     if ((snapshot.data!)) {
                       //nfcAction.call();
-                      ref.read(nfcProvider.notifier).readTagInSession(context);
+                      ref.read(nfcProvider.notifier).inSession(
+                        context,
+                        onDiscovered: (nfcTag) async {
+                          ref
+                              .read(nfcProvider.notifier)
+                              .readTag(nfcTag: nfcTag);
+                        },
+                      );
 
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           GestureDetector(
                             child: ScanImage(),
-                            onTap: () => ref
-                                .read(nfcProvider.notifier)
-                                .readTagInSession(context),
+                            onTap: () {
+                              ref.read(nfcProvider.notifier).inSession(
+                                context,
+                                onDiscovered: (nfcTag) async {
+                                  ref
+                                      .read(nfcProvider.notifier)
+                                      .readTag(nfcTag: nfcTag);
+                                },
+                              );
+                            },
                           ),
                           Padding(
                               padding: const EdgeInsets.only(

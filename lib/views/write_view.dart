@@ -99,7 +99,12 @@ class _WriteViewState extends ConsumerState<WriteView> {
                   onPressed: _storeDataToTag, child: Text('Write Data')),
               ElevatedButton(
                   onPressed: (() async {
-                    ref.read(nfcProvider.notifier).clearTagInSession(context);
+                    ref.read(nfcProvider.notifier).inSession(
+                      context,
+                      onDiscovered: (nfcTag) async {
+                        await ref.read(nfcProvider.notifier).clearTag(nfcTag);
+                      },
+                    );
                   }),
                   child: Text('Wipe Tag')),
             ],
@@ -115,22 +120,20 @@ class _WriteViewState extends ConsumerState<WriteView> {
 
   _storeDataToTag() async {
     await ref.read(nfcProvider.notifier).inSession(context,
-        onDiscovered: (nfcTag, mifareTag) async {
+        onDiscovered: (nfcTag) async {
       try {
         if (_title.isNotEmpty)
-          await ref.read(nfcProvider.notifier).setTitle(mifareTag, _title);
+          await ref.read(nfcProvider.notifier).setTitle(nfcTag, _title);
         if (_ticketId.isNotEmpty && _eventId.isNotEmpty)
           await ref
               .read(nfcProvider.notifier)
-              .setTicketAndEventsIds(mifareTag, _ticketId, _eventId);
+              .setTicketAndEventsIds(nfcTag, _ticketId, _eventId);
         if (_firstDate != null && _lastDate != null) {
           await ref
               .read(nfcProvider.notifier)
-              .setDateTimes(mifareTag, _firstDate!, _lastDate!);
+              .setDateTimes(nfcTag, _firstDate!, _lastDate!);
         }
-        await ref
-            .read(nfcProvider.notifier)
-            .readTag(mifareTag: mifareTag, nfcTag: nfcTag);
+        await ref.read(nfcProvider.notifier).readTag(nfcTag: nfcTag);
       } catch (e) {
         print('error writing!\n$e');
         if (e is PlatformException) {
